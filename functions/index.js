@@ -1,0 +1,101 @@
+const cors = require('cors')({ origin: "*" })
+const fs = require('fs')
+const Report = require("./classes/reportExcel")
+const ReportPDF = require("./classes/pdf.publish.report")
+const Axios = require('axios')
+const { bucket, functions } = require('./config/firebase')
+const { databaseUrl} = require('./constant/constant')
+const { writeFile, generateQRImage, uploadFile } = require('./helperFunction/function')
+const { v4: uuidV4 } = require('uuid')
+
+
+
+exports.qrcode = functions.https.onRequest((req, res) => {
+  return cors(req, res, async () => {
+    if (true) {
+      try {
+        const { entityId } = req.body
+        const destinationPath = `${entityId}/clientQr.png`
+        const tmpFileName = `${uuidV4()}.png`
+        const tmpPath = `/tmp/${tmpFileName}`
+        const file = bucket.file(destinationPath)
+        const exists = await file.exists()
+        if (exists[0]) {
+          const data = await file.getMetadata()
+          const { mediaLink } = data[0]
+          const imageLink = mediaLink
+          console.log(imageLink)
+          res.status(200).send(imageLink)
+        } else {
+          generateQRImage(tmpPath, entityId)
+          const imageLink = await uploadFile(tmpPath, destinationPath, 'image/png')
+          fs.unlinkSync(tmpPath)
+          res.status(200).send(imageLink)
+        }
+      } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+      }
+    } else {
+      res.status(404).send('not found')
+    }
+  })
+})
+
+
+exports.pdfReport = functions.https.onRequest((req, res) => {
+  return cors(req, res, async () => {
+    if (true) {
+      try {
+        const { entityId, date } = req.body
+        const { authorization } = req.headers
+        const { data } = await Axios.post(databaseUrl + '/report/reserved', { entityId, date }, { headers: { authorization } })
+        const { data: entityData } = await Axios.get(databaseUrl + `/entity/${entityId}?ts=${new Date().valueOf()}`, { headers: { authorization } })
+        const tmpFileName = `${uuidV4()}.pdf`
+        const tmpPath = `/tmp/${tmpFileName}`
+        const destinationPath = `${entityId}/รายงาน.pdf`
+        const pdf = new ReportPDF()
+        await pdf.main(entityData.organization, data, tmpFileName)
+        const downloadLink = await uploadFile(tmpPath, destinationPath, 'application/pdf')
+        fs.unlink(tmpPath, () => {
+          res.status(200).send(downloadLink)
+        })
+      } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+      }
+    } else {
+      res.status(404).send('not found')
+    }
+  })
+})
+
+
+exports.excelReport = functions.https.onRequest((req, res) => {
+  return cors(req, res, async () => {
+    if (true) {
+      try {
+        const { entityId, date } = req.body
+        const { authorization } = req.headers
+        const { data } = await Axios.post(databaseUrl + '/report/reserved', { entityId, date }, { headers: { authorization } })
+        const { data: entityData } = await Axios.get(databaseUrl + `/entity/${entityId}?ts=${new Date().valueOf()}`, { headers: { authorization } })
+        const tmpFileName = `${uuidV4()}.xlsx`
+        const tmpPath = `/tmp/${tmpFileName}`
+        const destinationPath = `${entityId}/รายงาน.xlsx`
+        const report = new Report('รายงานประจำวัน', entityData.organization, data)
+        const buffer = await report.writeBuffer()
+        writeFile('tmp', tmpFileName, buffer)
+        const downloadLink = await uploadFile(tmpPath, destinationPath, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        fs.unlinkSync(tmpPath)
+        res.status(200).send(downloadLink)
+      } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+      }
+    } else {
+      res.status(404).send('not found')
+    }
+  })
+})
+
+

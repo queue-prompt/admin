@@ -1,0 +1,12 @@
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-no-drop {
+  cursor: no-drop;
+}
+
+/* toast */
+.toasted {
+  padding: 20px 60px !important;
+}
