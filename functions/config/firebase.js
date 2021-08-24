@@ -10,7 +10,10 @@ const bucket =admin.storage().bucket()
 
 const functions = Functions.region(functionRegion)
 
+const firestore =admin.firestore()
+
 module.exports={
+  firestore,
   bucket,
   functions
 }

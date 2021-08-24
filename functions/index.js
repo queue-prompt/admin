@@ -3,8 +3,9 @@ const fs = require('fs')
 const Report = require("./classes/reportExcel")
 const ReportPDF = require("./classes/pdf.publish.report")
 const Axios = require('axios')
-const { bucket, functions } = require('./config/firebase')
-const { databaseUrl} = require('./constant/constant')
+const dayjs =require('dayjs')
+const { firestore,bucket, functions } = require('./config/firebase')
+const { databaseUrl,systemAdminEmail} = require('./constant/constant')
 const { writeFile, generateQRImage, uploadFile } = require('./helperFunction/function')
 const { v4: uuidV4 } = require('uuid')
 
@@ -99,3 +100,24 @@ exports.excelReport = functions.https.onRequest((req, res) => {
 })
 
 
+exports.onCreateUser = functions.auth.user().onCreate((user)=>{
+ firestore
+ .collection("mail")
+ .add({
+    to: systemAdminEmail,
+    message: {
+      subject: "แจ้งเตือน มีผู้สมัครใหม่จากระบบคิวพร้อม",
+      html: `
+      <body>
+      <h1>แจ้งเตือนมีผู้ใช้งานใหม่</h1>
+      <h3>ข้อมูลผู้ใช้งานใหม่</h3>
+      <p>อีเมล ${user.email}</p>
+      <p>สมัครเข้าระบบคิวพร้อมวันที่ ${dayjs().format('YYYY-MM-DD HH:mm:ss')}</p>
+      <p>รหัสผู้ใช้งาน ${user.uid}</p>
+      </body>
+      `,
+    },
+  })
+  .then(() => console.log("delivery user create notification email to system admin"))
+  .catch((err)=> console.log('error occured',err))
+})
