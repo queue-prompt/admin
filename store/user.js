@@ -121,14 +121,14 @@ export const actions = {
       if (state.authListener) {
         state.authListener();
       }
-      const { email, password } = signupForm;
-      const { user } = await auth.createUserWithEmailAndPassword(
+      const { email, password,mobile } = signupForm;
+      const { user} = await auth.createUserWithEmailAndPassword(
         email,
         password
       );
       const token = await auth.currentUser.getIdToken();
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      const userInfo = { uid: user.uid, email: user.email };
+      const userInfo = { uid: user.uid, email: user.email,mobile};
       const { data } = await userApi()._post(userInfo);
       const entityInfo = { entityId: data.entityId };
       for (const info in entityInfo) {

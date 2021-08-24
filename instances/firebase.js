@@ -3,7 +3,6 @@ import { firebaseConfig } from './config'
 import 'firebase/app'
 import 'firebase/auth'
 import 'firebase/storage'
-import { firebaseConfig } from './config'
 
 const app = firebase.initializeApp(firebaseConfig)
 

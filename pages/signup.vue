@@ -15,7 +15,19 @@
 
       <h3 class="text-center">สมัครใช้งาน</h3>
       <div class="card-body">
-        <form @submit.prevent="signup" @input="validatePasswordMatching">
+        <form @submit.prevent="signup" @input="validateField">
+            <div class="mb-3">
+            <label for="email" class="form-label">เบอร์โทรศัพท์</label>
+            <input
+              id="mobile"
+              v-model="form.mobile"
+              type="text"
+              class="form-control"
+              placeholder="mobile"
+              name="mobile"
+              required
+            />
+          </div>
           <div class="mb-3">
             <label for="email" class="form-label">อีเมล</label>
             <input
@@ -79,6 +91,7 @@ export default {
     return {
       form: {
         email: "",
+        mobile: "",
         password: "",
         confirmPassword: "",
       },
@@ -87,6 +100,10 @@ export default {
   methods: {
     signup() {
       this.$store.dispatch("user/signup", this.form);
+    },
+    validateField(){
+      this.validatePasswordMatching()
+      this.validatePhoneNumber()
     },
     validatePasswordMatching() {
       const passwordEl = document.getElementById("password");
@@ -97,6 +114,15 @@ export default {
         confirmPassEl.setCustomValidity("");
       }
     },
+    validatePhoneNumber(){
+      const regEx =/(^(0[689]{1})+([0-9]{8})+$)|(^(0[2]{1})+([0-9]{7})+$)/g
+      const mobileEl = document.getElementById("mobile");
+      if(!mobileEl.value.match(regEx)){
+        mobileEl.setCustomValidity("เบอร์โทรศัพท์ไม่ถูกต้อง");
+      }else{
+        mobileEl.setCustomValidity('')
+      }
+    }
   },
 };
 </script>
