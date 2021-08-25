@@ -1,4 +1,4 @@
-import { auth } from '~/instances/firebase'
+
 
 export const state = () => ({
   isLoading: false

@@ -24,7 +24,7 @@ export const actions = {
 
       if (user) {
         commit('setState', { key: 'user', value: user.uid })
-        this.$router.push('/')
+        this.$router.push('/home')
       }
       else {
         commit('setState', { key: 'user', value: null })

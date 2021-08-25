@@ -51,7 +51,7 @@ export const actions = {
       if (payload.image instanceof File) {
         const imageRef = userStorageRef.child(`${state.entityId}/logo.jpg`);
         const resizeRef = userStorageRef.child(
-          `${state.entityId}/logo_120x120.jpg`
+          `${state.entityId}/logo_360x120.jpg`
         );
         await imageRef.put(updatePayload.image);
         await new Promise(resolve => setTimeout(resolve, 7000));
@@ -146,7 +146,7 @@ export const actions = {
       dispatch("init")
       setTimeout(()=>{
         this.$router.push({name:'entity'})
-      },3000)
+      },2000)
     } catch (error) {
       let errorMessage = "error occured";
       if (error.message) {

@@ -62,7 +62,7 @@ export default {
     },
     pages() {
       const allPage = [
-        { name: "Home", to: "index", auth: true },
+        { name: "Home", to: "home", auth: true },
         { name: "หน่วยงาน", to: "entity", auth: true },
         { name: "ข้อมูลบริการ", to: "pre-register", auth: true },
         { name: "ตารางคิว", to: "timeslots-view", auth: true },

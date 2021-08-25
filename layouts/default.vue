@@ -94,10 +94,10 @@ export default {
     SubNavBar,
     Loading
   },
-  async mounted() {
+  mounted() {
     window.addEventListener("resize", this.onResizeScreen.bind(this), true);
     window.onorientationchange = this.onResizeScreen;
-    await this.$store.dispatch("auth/onAuthChange");
+    this.$store.dispatch("auth/onAuthChange");
   },
   methods: {
     onResizeScreen() {
