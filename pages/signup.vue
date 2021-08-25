@@ -35,7 +35,7 @@
               v-model="form.email"
               type="email"
               class="form-control"
-              placeholder="test@test.com"
+              placeholder="email"
               name="email"
               required
             />
