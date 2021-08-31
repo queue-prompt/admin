@@ -1,7 +1,8 @@
 const pdfPrinter = require('pdfmake/src/printer');
+const os =require('os')
 const fs = require('fs')
 const path = require('path')
-
+const tmp =os.tmpdir()
 
 const fonts = {
   Roboto: {
@@ -33,10 +34,10 @@ class PDF {
     styles: null
   }
 
-  buildPdf(dir, fileName,docDefinition) {
+  buildPdf(fileName,docDefinition) {
     return new Promise((resolve) => {
       const pdfDoc = printer.createPdfKitDocument(docDefinition)
-      pdfDoc.pipe(fs.createWriteStream(path.join(`/${dir}`, `${fileName}`))
+      pdfDoc.pipe(fs.createWriteStream(path.join(tmp, `${fileName}`))
         .on('error', (err) => { console.log('writePDF error',err) }
         ))
       pdfDoc.end()
