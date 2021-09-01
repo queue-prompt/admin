@@ -12,7 +12,7 @@
             :key="index"
             @click="changeMonth(m)"
           >
-            {{ index == 0 ? 'เดือนนี้' : 'เดือนหน้า' }}
+            {{ displayMonthThai(m) }}
           </button>
         </header>
 
@@ -66,6 +66,8 @@
 <script>
 import moment from "moment";
 import _ from "lodash";
+import { formatMonthEngToThai } from '../../utility/functions/format'
+
 export default {
   props: {
     rowsDate: {
@@ -174,6 +176,11 @@ export default {
     displayDate(yyyymmdd) {
       let s = yyyymmdd.substring(8, 10);
       return parseInt(s);
+    },
+
+    displayMonthThai (yyyymmdd) {
+      let mmmm = moment(yyyymmdd).format('MMMM')
+      return formatMonthEngToThai(mmmm)
     },
 
     genClass(yyyymmdd) {
