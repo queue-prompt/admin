@@ -8,11 +8,11 @@
           <button
             class="btn btn-space btn-secondary hover"
             :class="{ active: m == selectedMonth }"
-            v-for="m in monthList"
-            :key="m"
+            v-for="(m, index) in monthList"
+            :key="index"
             @click="changeMonth(m)"
           >
-            {{ displayMonth(m) }}
+            {{ index == 0 ? 'เดือนนี้' : 'เดือนหน้า' }}
           </button>
         </header>
 
@@ -54,6 +54,7 @@
             <p class="selected" v-if="tmpDate[d]">
               <span class="mdi mdi-check"></span>
             </p>
+            <p v-if="!createdDate[d] && !tmpDate[d] && d > today" class="free">ว่าง</p>
           </li>
         </ol>
       </div>
@@ -84,10 +85,11 @@ export default {
       startDay: _.range(0, 2),
       daysLength: [],
       rowsDateData: [],
-      monthList: ["2021-08", "2021-09"],
+      monthList: [moment().format('YYYY-MM'), moment().add({ months: 1 }).format('YYYY-MM')],
 
       selectedDate: {},
       selectedMonth: "",
+      today: moment().format('YYYY-MM-DD')
     };
   },
   mounted() {
@@ -169,22 +171,19 @@ export default {
       this.computeCalendar(month);
     },
 
-    displayMonth(yyyymm) {
-      return moment(yyyymm, "YYYY-MM").format("MMMM");
-    },
-
     displayDate(yyyymmdd) {
       let s = yyyymmdd.substring(8, 10);
       return parseInt(s);
     },
 
     genClass(yyyymmdd) {
-      const today = moment().format("YYYY-MM-DD")
+      const { today } = this
       return {
         past: today > yyyymmdd,
         selected: this.tmpDate[yyyymmdd],
         open: this.createdDate[yyyymmdd],
-        today: today == yyyymmdd
+        today: today == yyyymmdd,
+        free: !this.createdDate[yyyymmdd] && !this.tmpDate[yyyymmdd] && yyyymmdd > today
       }
     },
   },
@@ -244,13 +243,17 @@ ol.day-grid li.selected {
 }
 
 ol.day-grid li.past {
-  background-color: #fff;
+  background-color: #eaeaea;
   cursor: not-allowed !important;
 }
 
 ol.day-grid li.open {
   background-color: #fbbc05;
   cursor: not-allowed !important;
+}
+
+ol.day-grid li.free {
+  background-color: #fff;
 }
 
 ol.day-grid li.today {
@@ -274,6 +277,13 @@ p.open {
   color: #666;
 }
 
+p.free {
+  position: relative;
+  top: 25px;
+  font-size: 0.95rem;
+  color: #666;
+}
+
 p.selected {
   position: relative;
   top: 25px;
@@ -283,7 +293,11 @@ li.today > p.text {
   background-color: #e42323;
   color: #fff;
   border-radius: 100%;
-  padding: 6px;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  text-align: center;
+  margin: 0;
 }
 
 @media all and (max-width: 800px) {
