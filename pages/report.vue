@@ -89,6 +89,7 @@
                   <th scope="col">ชื่อ-นามสกุล</th>
                   <th scope="col">เลขรหัสบัตรประชาชน</th>
                   <th scope="col">เบอร์โทรศัพท์</th>
+                  <th scope="col">กลุ่ม</th>
                 </tr>
               </thead>
               <tbody>
@@ -99,6 +100,7 @@
                   </td>
                   <td>{{ data.idCardNumber }}</td>
                   <td>{{ data.mobile }}</td>
+                  <td>{{ data.groupOf }}</td>
                 </tr>
               </tbody>
             </table>

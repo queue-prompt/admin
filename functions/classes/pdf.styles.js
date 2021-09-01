@@ -23,7 +23,7 @@ module.exports = {
       margin: [0, 20, 0, 0]
     },
     tableContentStyle: {
-      fontSize: 14
+      fontSize: 12
     }
   }
 }

@@ -1,5 +1,7 @@
 const cors = require('cors')({ origin: "*" })
 const fs = require('fs')
+const os = require('os')
+const path =require('path')
 const Report = require("./classes/reportExcel")
 const ReportPDF = require("./classes/pdf.publish.report")
 const Axios = require('axios')
@@ -9,7 +11,7 @@ const { databaseUrl,systemAdminEmail} = require('./constant/constant')
 const { writeFile, generateQRImage, uploadFile } = require('./helperFunction/function')
 const { v4: uuidV4 } = require('uuid')
 
-
+const tmp = os.tmpdir()
 
 exports.qrcode = functions.https.onRequest((req, res) => {
   return cors(req, res, async () => {
@@ -18,7 +20,7 @@ exports.qrcode = functions.https.onRequest((req, res) => {
         const { entityId } = req.body
         const destinationPath = `${entityId}/clientQr.png`
         const tmpFileName = `${uuidV4()}.png`
-        const tmpPath = `/tmp/${tmpFileName}`
+        const tmpPath = path.join(tmp,tmpFileName)
         const file = bucket.file(destinationPath)
         const exists = await file.exists()
         if (exists[0]) {
@@ -53,7 +55,7 @@ exports.pdfReport = functions.https.onRequest((req, res) => {
         const { data } = await Axios.post(databaseUrl + '/report/reserved', { entityId, date }, { headers: { authorization } })
         const { data: entityData } = await Axios.get(databaseUrl + `/entity/${entityId}?ts=${new Date().valueOf()}`, { headers: { authorization } })
         const tmpFileName = `${uuidV4()}.pdf`
-        const tmpPath = `/tmp/${tmpFileName}`
+        const tmpPath = path.join(tmp,tmpFileName)
         const destinationPath = `${entityId}/รายงาน.pdf`
         const pdf = new ReportPDF()
         await pdf.main(entityData.organization, data, tmpFileName)
@@ -81,11 +83,11 @@ exports.excelReport = functions.https.onRequest((req, res) => {
         const { data } = await Axios.post(databaseUrl + '/report/reserved', { entityId, date }, { headers: { authorization } })
         const { data: entityData } = await Axios.get(databaseUrl + `/entity/${entityId}?ts=${new Date().valueOf()}`, { headers: { authorization } })
         const tmpFileName = `${uuidV4()}.xlsx`
-        const tmpPath = `/tmp/${tmpFileName}`
+        const tmpPath = path.join(tmp,tmpFileName)
         const destinationPath = `${entityId}/รายงาน.xlsx`
         const report = new Report('รายงานประจำวัน', entityData.organization, data)
         const buffer = await report.writeBuffer()
-        writeFile('tmp', tmpFileName, buffer)
+        writeFile(tmp, tmpFileName, buffer)
         const downloadLink = await uploadFile(tmpPath, destinationPath, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         fs.unlinkSync(tmpPath)
         res.status(200).send(downloadLink)

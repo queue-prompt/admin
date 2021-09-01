@@ -82,11 +82,16 @@ class ReportPDF extends PDF{
       }
 
     },
-      { 
+    { 
         text: 'เบอร์โทรศัพท์',
         style: 'tableContentStyle',
         renderContent:(data)=> `${data.mobile}`
-      },
+    },
+    {
+      text:'กลุ่ม',
+      style:'tableContentStyle',
+      renderContent:(data)=>`${data.groupOf}`
+    }
   ]
 
   constructor(){
@@ -100,7 +105,7 @@ class ReportPDF extends PDF{
       this.createReportTable(summaryData.list)
     }
     this.docDefinition.content.push({ text: `ผู้ลงทะเบียนทั้งหมด: ${summaryData.list.length} คน`, style: 'tableContentStyle', margin: [0, 10, 0, 0] })
-    return this.buildPdf('tmp',fileName,this.docDefinition)
+    return this.buildPdf(fileName,this.docDefinition)
   }
 
   setPageStyle(){

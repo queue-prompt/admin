@@ -6,7 +6,7 @@ const {clientAppUrl} =require('../constant/constant')
 
 function writeFile(dir,filename,content){
   fs.promises.mkdir(dir, { recursive: true }).catch(error => { console.error('caught exception : ', error.message); });
-  fs.writeFileSync(`/${dir}`+'/'+filename, content, function (err) {
+  fs.writeFileSync(`${dir}`+'/'+filename, content, function (err) {
       if (err) throw err;
   });
 }
