@@ -104,14 +104,19 @@
                     /><span class="custom-control-label">{{
                       choice.text
                     }}</span>
-                    <input
-                      :readonly="selectedChoice === 'other' ? false : true"
-                      type="text"
-                      required
-                      :value="optionalChoiceValue"
-                      @change="(e) => (optionalChoiceValue = e.target.value)"
-                    />
+                  
+                    <div class="mt-2" v-show="selectedChoice == 'other'">
+                        <input
+                        style="width: 50%; padding: 5px; border: 1px solid #bdc0c7;"
+                        :readonly="selectedChoice === 'other' ? false : true"
+                        type="text"
+                        required
+                        :value="optionalChoiceValue"
+                        @change="(e) => (optionalChoiceValue = e.target.value)"
+                      />
+                    </div>
                   </template>
+
                   <template v-else>
                     <input
                       class="custom-control-input"
@@ -308,9 +313,9 @@ export default {
         { text: "email", value: "email", type: "email" },
       ],
       radioChoice: [
+        { text: "กำหนดชื่อบริการเอง", value: "other" },
         { text: "จองตรวจโควิด", value: "100" },
         { text: "จองฉีดวัคซีน", value: "200" },
-        { text: "อื่นๆโปรดระบุ", value: "other" },
       ],
     };
   },
