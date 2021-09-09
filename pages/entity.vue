@@ -82,81 +82,7 @@
               </div>
             </div>
 
-            <div class="form-group row pt-1 pb-1">
-              <label class="col-12 col-sm-3 col-form-label text-sm-right"
-                >ประเภทบริการ</label
-              >
-              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1" style="max-width:350px">
-                <label
-                  v-for="(choice, $choiceIndex) in radioChoice"
-                  :key="$choiceIndex"
-                  class="custom-control custom-radio"
-                >
-                  <template v-if="choice.value == 'other'">
-                    <input
-                      class="custom-control-input"
-                      type="radio"
-                      name="type"
-                      :value="choice.value"
-                      :checked="
-                        choice.value === selectedOptionalChoice ? true : false
-                      "
-                      @change="selectType"
-                    /><span class="custom-control-label">{{
-                      choice.text
-                    }}</span>
-
-                    <div
-                      class="mt-2"
-                      v-show="selectedOptionalChoice == 'other'"
-                    >
-                      <input
-                        style="width: 50%; padding: 5px; border: 1px solid #bdc0c7;"
-                        :readonly="
-                          selectedOptionalChoice === 'other' ? false : true
-                        "
-                        type="text"
-                        required
-                        :value="optionalChoiceValue"
-                        @change="e => (optionalChoiceValue = e.target.value)"
-                      />
-                    </div>
-                  </template>
-
-                  <template v-else>
-                    <input
-                      class="custom-control-input"
-                      type="radio"
-                      name="type"
-                      :value="choice.value"
-                      :checked="
-                        choice.value === selectedOptionalChoice ? true : false
-                      "
-                      @change="selectType"
-                    /><span class="custom-control-label">{{
-                      choice.text
-                    }}</span>
-                  </template>
-                </label>
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label
-                class="col-12 col-sm-3 col-form-label text-sm-right"
-                for="inputText3"
-                >ค่าใช้จ่าย (บาท)</label
-              >
-              <div class="col-12 col-sm-8 col-lg-6">
-                <input class="form-control" v-model="form.price" type="text" />
-                <span class="card-subtitle">
-                  ผู้มาใช้บริการจะชำระโดยตรงกับหน่วยงานโดยตรงในวันมาใช้บริการ,
-                  หากไม่มีค่าใช้จ่ายให้ใส่ 0
-                </span>
-              </div>
-            </div>
-
-            <div class="form-group row">
+                   <div class="form-group row">
               <label
                 class="col-12 col-sm-3 col-form-label text-sm-right"
                 for="inputText3"
@@ -273,6 +199,82 @@
                 </label>
               </div>
             </div>
+
+            <div class="form-group row pt-1 pb-1">
+              <label class="col-12 col-sm-3 col-form-label text-sm-right"
+                >ประเภทบริการ</label
+              >
+              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1" style="max-width:350px">
+                <label
+                  v-for="(choice, $choiceIndex) in radioChoice"
+                  :key="$choiceIndex"
+                  class="custom-control custom-radio"
+                >
+                  <template v-if="choice.value == 'other'">
+                    <input
+                      class="custom-control-input"
+                      type="radio"
+                      name="type"
+                      :value="choice.value"
+                      :checked="
+                        choice.value === selectedOptionalChoice ? true : false
+                      "
+                      @change="selectType"
+                    /><span class="custom-control-label">{{
+                      choice.text
+                    }}</span>
+
+                    <div
+                      class="mt-2"
+                      v-show="selectedOptionalChoice == 'other'"
+                    >
+                      <input
+                        style="width: 50%; padding: 5px; border: 1px solid #bdc0c7;"
+                        :readonly="
+                          selectedOptionalChoice === 'other' ? false : true
+                        "
+                        type="text"
+                        required
+                        :value="optionalChoiceValue"
+                        @change="e => (optionalChoiceValue = e.target.value)"
+                      />
+                    </div>
+                  </template>
+
+                  <template v-else>
+                    <input
+                      class="custom-control-input"
+                      type="radio"
+                      name="type"
+                      :value="choice.value"
+                      :checked="
+                        choice.value === selectedOptionalChoice ? true : false
+                      "
+                      @change="selectType"
+                    /><span class="custom-control-label">{{
+                      choice.text
+                    }}</span>
+                  </template>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label
+                class="col-12 col-sm-3 col-form-label text-sm-right"
+                for="inputText3"
+                >ค่าใช้จ่าย (บาท)</label
+              >
+              <div class="col-12 col-sm-8 col-lg-6">
+                <input class="form-control" v-model="form.price" type="text" />
+                <span class="card-subtitle">
+                  ผู้มาใช้บริการจะชำระโดยตรงกับหน่วยงานโดยตรงในวันมาใช้บริการ,
+                  หากไม่มีค่าใช้จ่ายให้ใส่ 0
+                </span>
+              </div>
+            </div>
+
+     
           </div>
 
           <!-- ช่วง 2  -->
@@ -456,7 +458,7 @@ export default {
       ],
       reserveChoice: [
         { text: "เปิดจองล่วงหน้าแบบจำกัดวัน", value: 0 },
-        { text: "เปิดจองทั้งหมด", value: 1 }
+        { text: "เปิดจองทั้งหมดพร้อมกัน", value: 1 }
       ]
     };
   },
@@ -513,8 +515,8 @@ export default {
         price,
         type,
         location,
-        reserveMode = null,
-        reserveValue = null,
+        reserveMode = 0,
+        reserveValue = 1,
         reserveDate = null,
         reserveTime = null
       } = localForm;
