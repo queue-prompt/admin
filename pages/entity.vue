@@ -86,7 +86,7 @@
               <label class="col-12 col-sm-3 col-form-label text-sm-right"
                 >ประเภทบริการ</label
               >
-              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1">
+              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1" style="max-width:350px">
                 <label
                   v-for="(choice, $choiceIndex) in radioChoice"
                   :key="$choiceIndex"
@@ -163,7 +163,7 @@
               >
                 รูปแบบการเปิดจอง
               </label>
-              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1">
+              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1" style="max-width:400px">
                 <label
                   v-for="(choice, $choiceIndex) in reserveChoice"
                   :key="$choiceIndex"
