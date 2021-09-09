@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <div class="div">
@@ -99,20 +98,27 @@
                       type="radio"
                       name="type"
                       :value="choice.value"
-                      :checked="choice.value === selectedChoice ? true : false"
+                      :checked="
+                        choice.value === selectedOptionalChoice ? true : false
+                      "
                       @change="selectType"
                     /><span class="custom-control-label">{{
                       choice.text
                     }}</span>
-                  
-                    <div class="mt-2" v-show="selectedChoice == 'other'">
-                        <input
+
+                    <div
+                      class="mt-2"
+                      v-show="selectedOptionalChoice == 'other'"
+                    >
+                      <input
                         style="width: 50%; padding: 5px; border: 1px solid #bdc0c7;"
-                        :readonly="selectedChoice === 'other' ? false : true"
+                        :readonly="
+                          selectedOptionalChoice === 'other' ? false : true
+                        "
                         type="text"
                         required
                         :value="optionalChoiceValue"
-                        @change="(e) => (optionalChoiceValue = e.target.value)"
+                        @change="e => (optionalChoiceValue = e.target.value)"
                       />
                     </div>
                   </template>
@@ -123,7 +129,9 @@
                       type="radio"
                       name="type"
                       :value="choice.value"
-                      :checked="choice.value === selectedChoice ? true : false"
+                      :checked="
+                        choice.value === selectedOptionalChoice ? true : false
+                      "
                       @change="selectType"
                     /><span class="custom-control-label">{{
                       choice.text
@@ -141,10 +149,128 @@
               >
               <div class="col-12 col-sm-8 col-lg-6">
                 <input class="form-control" v-model="form.price" type="text" />
-                <span class="card-subtitle"
-                  >ผู้มาใช้บริการจะชำระโดยตรงกับหน่วยงานโดยตรงในวันมาใช้บริการ,
+                <span class="card-subtitle">
+                  ผู้มาใช้บริการจะชำระโดยตรงกับหน่วยงานโดยตรงในวันมาใช้บริการ,
                   หากไม่มีค่าใช้จ่ายให้ใส่ 0
                 </span>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label
+                class="col-12 col-sm-3 col-form-label text-sm-right"
+                for="inputText3"
+              >
+                รูปแบบการเปิดจอง
+              </label>
+              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1">
+                <label
+                  v-for="(choice, $choiceIndex) in reserveChoice"
+                  :key="$choiceIndex"
+                  class="custom-control custom-radio"
+                >
+                  <template v-if="choice.value === 0">
+                    <input
+                      class="custom-control-input"
+                      type="radio"
+                      name="reserve"
+                      :value="choice.value"
+                      :checked="
+                        choice.value === selectedReserveChoice ? true : false
+                      "
+                      @change="selectReserveChoice"
+                    /><span class="custom-control-label">{{
+                      choice.text
+                    }}</span>
+                    <div class="mt-2" v-show="selectedReserveChoice === 0">
+                      <input
+                        style="width: 50%; padding: 5px; border: 1px solid #bdc0c7;"
+                        :readonly="selectedReserveChoice === 0 ? false : true"
+                        type="number"
+                        placeholder="วัน"
+                        required
+                        :value="reserveChoiceValue"
+                        @change="e => (reserveChoiceValue = e.target.value)"
+                      />
+                    </div>
+                  </template>
+                  <template v-else>
+                    <input
+                      class="custom-control-input"
+                      type="radio"
+                      name="reserve"
+                      :value="choice.value"
+                      :checked="
+                        choice.value === selectedReserveChoice ? true : false
+                      "
+                      @change="selectReserveChoice"
+                    />
+                    <span class="custom-control-label">
+                      {{ choice.text }}
+                    </span>
+
+                    <div class="mt-2" v-show="selectedReserveChoice === 1">
+                      <div class="form-group-row">
+                        <label
+                          class="col-12 col-sm-3 col-form-label"
+                          for="inputText3"
+                        >
+                          วันที่เริ่มเปิดให้จอง
+                        </label>
+                        <div class="col-12 col-sm-8 col-lg-6 mt-1">
+                          <v-date-picker
+                            :masks="masks"
+                            v-model="date"
+                            transition="none"
+                            mode="date"
+                          >
+                            <template #default="{ inputValue, togglePopover }">
+                              <input
+                                type="text"
+                                style=" padding: 5px; border: 1px solid #bdc0c7;"
+                                :value="inputValue"
+                                @click.stop="
+                                  togglePopover({
+                                    placement: 'bottom',
+                                    showDelay: 0,
+                                    hideDelay: 0
+                                  })
+                                "
+                              />
+                            </template>
+                          </v-date-picker>
+                        </div>
+                      </div>
+
+                        <div class="form-group-row">
+                        <label
+                          class="col-sm-3 col-form-label "
+                          for="inputText3"
+                        >
+                          เวลา
+                        </label>
+                        <div class="col-12 col-sm-8 col-lg-6 mt-1">
+                          <v-date-picker mode="time" v-model="date" is24hr>
+                              <template #default="{ inputValue, togglePopover }">
+                              <input
+                                type="text"
+                                style=" padding: 5px; border: 1px solid #bdc0c7;"
+                                :value="inputValue"
+                                @click.stop="
+                                  togglePopover({
+                                    placement: 'bottom',
+                                    showDelay: 0,
+                                    hideDelay: 0
+                                  })
+                                "
+                              />
+                            </template>
+                          </v-date-picker>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </label>
               </div>
             </div>
           </div>
@@ -274,49 +400,64 @@
 
 <script>
 import { mapState } from "vuex";
+import dayjs from "dayjs";
 export default {
   name: "Entity",
   data() {
     return {
       form: {
         organization: "",
-        location: { address: ""},
+        location: { address: "" },
         image: null,
         type: null,
         price: "",
         adminContact: {
           name: "",
           phone: "",
-          alt: "",
+          alt: ""
         },
         citizenContact: {
           phone: "",
           website: "",
           lineId: "",
           facebook: "",
-          email: "",
+          email: ""
         },
+        reserveMode: null,
+        reserveValue: "",
+        reserveDate: null,
+        reserveTime: null
+      },
+      date: dayjs().toISOString(),
+      masks:{
+        input:'YYYY-MM-DD'
       },
       imageFile: null,
-      selectedChoice: null,
+      selectedOptionalChoice: null,
+      selectedReserveChoice: null,
+      reserveChoiceValue: null,
       optionalChoiceValue: null,
       adminContactPart: [
         { text: "ชื่อ", value: "name", type: "text" },
         { text: "เบอร์โทร", value: "phone", type: "text" },
-        { text: "สำรอง", value: "alt", type: "text" },
+        { text: "สำรอง", value: "alt", type: "text" }
       ],
       citizenContactPart: [
         { text: "เบอร์โทร", value: "phone", type: "text" },
         { text: "เว็ปไซต์", value: "website", type: "text" },
         { text: "line Id", value: "lineId", type: "text" },
         { text: "facebook", value: "facebook", type: "text" },
-        { text: "email", value: "email", type: "email" },
+        { text: "email", value: "email", type: "email" }
       ],
       radioChoice: [
         { text: "กำหนดชื่อบริการเอง", value: "other" },
         { text: "จองตรวจโควิด", value: "100" },
-        { text: "จองฉีดวัคซีน", value: "200" },
+        { text: "จองฉีดวัคซีน", value: "200" }
       ],
+      reserveChoice: [
+        { text: "เปิดจองล่วงหน้าแบบจำกัดวัน", value: 0 },
+        { text: "เปิดจองทั้งหมด", value: 1 }
+      ]
     };
   },
   mounted() {
@@ -327,18 +468,17 @@ export default {
       handler(newValue) {
         this.setFormValue(newValue);
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   computed: {
     ...mapState({
-      userData: (state) => state.user,
-    }),
+      userData: state => state.user
+    })
   },
   methods: {
     updateInfo() {
       const updatePayload = this.createUpdatePayload();
-
       this.$store.dispatch("user/updateUserInfo", updatePayload);
     },
     removeLogo() {
@@ -348,7 +488,7 @@ export default {
     },
     selectType(event) {
       const value = event.target.value;
-      this.selectedChoice = value;
+      this.selectedOptionalChoice = value;
       if (value === "other") {
         this.form.type = "";
       } else {
@@ -356,17 +496,43 @@ export default {
         this.optionalChoiceValue = null;
       }
     },
+    selectReserveChoice(event) {
+      const value = parseInt(event.target.value);
+      this.selectedReserveChoice = value;
+      if (value === 1) {
+        this.form.reserveValue = "";
+      }
+      this.reserveChoiceValue = null;
+      this.form.reserveMode = value;
+    },
     async setFormValue(formValue) {
-      const localForm = {...formValue}
-      const { organization, image = null, price, type, location } = localForm;
+      const localForm = { ...formValue };
+      const {
+        organization,
+        image = null,
+        price,
+        type,
+        location,
+        reserveMode = null,
+        reserveValue = null,
+        reserveDate = null,
+        reserveTime = null
+      } = localForm;
       if (type) {
         if (type === "100" || type === "200") {
-          this.selectedChoice = type;
+          this.selectedOptionalChoice = type;
           this.optionalChoiceValue = null;
         } else {
           this.optionalChoiceValue = type;
-          this.selectedChoice = "other";
+          this.selectedOptionalChoice = "other";
         }
+      }
+      if(reserveMode === 0){
+        this.reserveChoiceValue = reserveValue
+      } 
+      this.selectedReserveChoice = reserveMode;
+      if(reserveDate && reserveTime){
+        this.date = `${reserveDate} ${reserveTime.slice(0,2)}:${reserveTime.slice(2,4)}`
       }
       const adminContact = { ...formValue.adminContact };
       const citizenContact = { ...formValue.citizenContact };
@@ -376,9 +542,13 @@ export default {
         type,
         image,
         price,
-        location:{...location},
+        location: { ...location },
         adminContact,
         citizenContact,
+        reserveMode,
+        reserveValue,
+        reserveDate,
+        reserveTime
       };
     },
     inputImage(event) {
@@ -399,18 +569,35 @@ export default {
       if (this.optionalChoiceValue) {
         payload.type = this.optionalChoiceValue;
       }
+      if (this.reserveChoiceValue) {
+        payload.reserveValue = parseInt(this.reserveChoiceValue);
+      } else {
+        delete payload['reserveValue']
+      }
+      
+      if(payload.reserveMode === 1){
+        const date = dayjs(this.date).format('YYYY-MM-DD')
+        const time = dayjs(this.date).format('HHmm')
+        payload.reserveDate =date
+        payload.reserveTime = time
+      }else{
+        delete payload['reserveDate']
+        delete payload['reserveTime']
+      }
+
+
       if (this.imageFile) {
         payload.image = this.imageFile;
         this.imageFile = null;
-        const uploadEle = document.getElementById('logoUpload')
-        uploadEle.value = null
+        const uploadEle = document.getElementById("logoUpload");
+        uploadEle.value = null;
       }
       return payload;
     },
     cancelForm() {
       window.location.reload();
-    },
-  },
+    }
+  }
 };
 </script>
 

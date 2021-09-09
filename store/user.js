@@ -27,6 +27,10 @@ export const state = () => ({
     facebook: "",
     email: ""
   },
+  reserveMode:null,
+  reserveValue:'',
+  reserveDate:null,
+  reserveTime:null,
   active: false,
   authListener: null
 });
