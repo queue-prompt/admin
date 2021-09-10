@@ -90,6 +90,7 @@
                   <th scope="col">เลขรหัสบัตรประชาชน</th>
                   <th scope="col">เบอร์โทรศัพท์</th>
                   <th scope="col">กลุ่ม</th>
+                  <th scope="col">ข้อมูลเพิ่มเติม</th>
                 </tr>
               </thead>
               <tbody>
@@ -101,6 +102,7 @@
                   <td>{{ data.idCardNumber }}</td>
                   <td>{{ data.mobile }}</td>
                   <td>{{ data.groupOf }}</td>
+                  <td>{{data.remark}}</td>
                 </tr>
               </tbody>
             </table>

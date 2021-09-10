@@ -41,31 +41,35 @@ class ReportPDF extends PDF{
     { 
       text: 'รหัสการจอง',
       style: 'tableContentStyle',
-      renderContent:(data)=>`${data.registerCode}`
+      renderContent:(data)=>data.registerCode?`${data.registerCode}`:''
     },
     { 
       text: 'ช่วงเวลาการจอง',
       style: 'tableContentStyle',
-      renderContent:(data)=>`${convertTimeRangeFormat(data.time)}`,style:'tableContentStyle'
+      renderContent:(data)=>data.time?`${convertTimeRangeFormat(data.time)}`:''
     },
     { 
       text: 'รหัสบัตรประชาชน',
       style: 'tableContentStyle',
-      renderContent:(data)=>`${data.idCardNumber}`
+      renderContent:(data)=>data.idCardNumber?`${data.idCardNumber}`:''
     },
     { 
       text: 'ชื่อ-นามสกุล',
       style: 'tableContentStyle',
-      renderContent:({prefix,firstName,lastName})=> `${prefix} ${firstName} ${lastName}` 
+      renderContent:({prefix='',firstName='',lastName=''})=> `${prefix} ${firstName} ${lastName}` 
     },
     { 
       text: 'เพศ',
       style:'tableContentStyle',
       renderContent:(data)=>{
-        if(data.gender ==='male'){
-          return  'ชาย'
+        if(data.gender){
+          if(data.gender ==='male'){
+            return  'ชาย'
+          }else{
+            return 'หญิง'
+          }
         }else{
-          return 'หญิง'
+          return ''
         }
       }
     },
@@ -73,11 +77,15 @@ class ReportPDF extends PDF{
       text: 'อายุ',
       style:'tableContentStyle',
       renderContent:(data)=>{
-        const { year, month } = calAge(data.birthDate)
-        if (month) {
-          return `${year}Y ${month}M`
-        } else {
-          return `${year}Y`
+        if(data.birthDate){
+          const { year, month } = calAge(data.birthDate)
+          if (month) {
+            return `${year}Y ${month}M`
+          } else {
+            return `${year}Y`
+          }
+        }else{
+          return ''
         }
       }
 
@@ -85,12 +93,17 @@ class ReportPDF extends PDF{
     { 
         text: 'เบอร์โทรศัพท์',
         style: 'tableContentStyle',
-        renderContent:(data)=> `${data.mobile}`
+        renderContent:(data)=>data.mobile?`${data.mobile}`:''
     },
     {
       text:'กลุ่ม',
       style:'tableContentStyle',
-      renderContent:(data)=>`${data.groupOf}`
+      renderContent:(data)=>data.groupOf?`${data.groupOf}`:''
+    },
+    {
+      text:'ข้อมูลเพิ่มเติม',
+      style:'tableContentStyle',
+      renderContent:(data)=>data.remark?`${data.remark}`:''
     }
   ]
 
@@ -110,6 +123,7 @@ class ReportPDF extends PDF{
 
   setPageStyle(){
     this.docDefinition.styles = ReportPdfStyle
+    this.docDefinition.pageOrientation = 'landscape'
   }
 
   createReportHeader(entityName,summaryData){
@@ -166,6 +180,8 @@ class ReportPDF extends PDF{
     for (let i = 0; i < this.tableHeaders.length; i++) {
       if(this.tableHeaders[i].text === 'เบอร์โทรศัพท์'){
         widths.push(60)
+      }else if(this.tableHeaders[i].text === 'ข้อมูลเพิ่มเติม'){
+        widths.push('*')
       }else {
         widths.push('auto')
       }

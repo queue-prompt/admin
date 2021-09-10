@@ -36,10 +36,10 @@ class Report{
   }
 
   genReportContent(sheetId,reportDate,dataList){
-      const contentHeader = ['ลำดับ','รหัสการจอง','ช่วงเวลาการจอง','รหัสบัตรประชาชน','ชื่อ-นามสกุล','เพศ','อายุ','เบอร์โทรศัพท์','กลุ่ม']
+      const contentHeader = ['ลำดับ','รหัสการจอง','ช่วงเวลาการจอง','รหัสบัตรประชาชน','ชื่อ-นามสกุล','เพศ','อายุ','เบอร์โทรศัพท์','กลุ่ม','ข้อมูลเพิ่มเติม']
       this.workbook.getWorksheet(sheetId).addRow(contentHeader)
       for(const [index,data] of dataList.entries()){
-        const {prefix,firstName,lastName,idCardNumber,birthDate,time,mobile,registerCode,gender,groupOf} =data
+        const {prefix,firstName,lastName,idCardNumber,birthDate,time,mobile,registerCode,gender,groupOf,remark = ''} =data
         const rowData =[]
         for(let i =0; i<contentHeader.length;i++){
           switch(contentHeader[i]){
@@ -78,6 +78,9 @@ class Report{
                 }else{
                   rowData.push('หญิง')
                 }
+                break;
+              case 'ข้อมูลเพิ่มเติม':
+                rowData.push(remark)
                 break;
               default:
                 break;
@@ -128,8 +131,9 @@ class Report{
     this.workbook.getWorksheet(sheetId).getColumn(6).width = 10
     this.workbook.getWorksheet(sheetId).getColumn(7).width = 15
     this.workbook.getWorksheet(sheetId).getColumn(8).width = 20
-    this.workbook.getWorksheet(sheetId).getColumn(9).width = 20
-    this.workbook.getWorksheet(sheetId).views =[{state:'frozen',xSplit: 9,ySplit: 6}]
+    this.workbook.getWorksheet(sheetId).getColumn(9).width = 10
+    this.workbook.getWorksheet(sheetId).getColumn(10).width = 40
+    this.workbook.getWorksheet(sheetId).views =[{state:'frozen',xSplit: 10,ySplit: 6}]
   }
 
   writeBuffer(){
