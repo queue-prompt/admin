@@ -603,4 +603,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.vc-date{
+  display: none !important;
+}
+</style>
