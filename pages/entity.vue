@@ -604,7 +604,7 @@ export default {
 </script>
 
 <style scoped>
-.vc-date{
+>>> .vc-date{
   display: none !important;
 }
 </style>
