@@ -117,6 +117,7 @@
                         required
                         :value="reserveChoiceValue"
                         @change="e => (reserveChoiceValue = e.target.value)"
+                         @input="validateReserveValue"
                       />
                     </div>
                   </template>
@@ -498,13 +499,25 @@ export default {
         this.optionalChoiceValue = null;
       }
     },
+    validateReserveValue(event){
+      let result
+      if(event.target.value){
+         const value = parseInt(event.target.value)
+      if(value <= 0){
+        result = 1
+      }else if(value >14){
+        result = 14
+      }else{
+        result = event.target.value
+      } 
+      }else{
+        result = null
+      }
+      event.target.value = result
+    },
     selectReserveChoice(event) {
       const value = parseInt(event.target.value);
       this.selectedReserveChoice = value;
-      if (value === 1) {
-        this.form.reserveValue = "";
-      }
-      this.reserveChoiceValue = null;
       this.form.reserveMode = value;
     },
     async setFormValue(formValue) {
