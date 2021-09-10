@@ -117,7 +117,7 @@
                         required
                         :value="reserveChoiceValue"
                         @change="e => (reserveChoiceValue = e.target.value)"
-                         @input="validateReserveValue"
+                        @input="validateReserveValue"
                       />
                     </div>
                   </template>
@@ -458,7 +458,7 @@ export default {
         { text: "จองฉีดวัคซีน", value: "200" }
       ],
       reserveChoice: [
-        { text: "เปิดจองล่วงหน้าแบบจำกัดวัน", value: 0 },
+        { text: "เปิดจองล่วงหน้าแบบจำกัดวัน(สูงสุด 14 วัน)", value: 0 },
         { text: "เปิดจองทั้งหมดพร้อมกัน", value: 1 }
       ]
     };
@@ -492,12 +492,7 @@ export default {
     selectType(event) {
       const value = event.target.value;
       this.selectedOptionalChoice = value;
-      if (value === "other") {
-        this.form.type = "";
-      } else {
-        this.form.type = value;
-        this.optionalChoiceValue = null;
-      }
+      this.form.type = value;
     },
     validateReserveValue(event){
       let result
@@ -532,11 +527,10 @@ export default {
         reserveValue = 1,
         reserveDate = null,
         reserveTime = null
-      } = localForm;
+      } = localForm; 
       if (type) {
         if (type === "100" || type === "200") {
           this.selectedOptionalChoice = type;
-          this.optionalChoiceValue = null;
         } else {
           this.optionalChoiceValue = type;
           this.selectedOptionalChoice = "other";
@@ -581,9 +575,10 @@ export default {
     },
     createUpdatePayload() {
       const payload = { ...this.form };
-      if (this.optionalChoiceValue) {
-        payload.type = this.optionalChoiceValue;
+      if(payload.type === 'other'){
+        payload.type =this.optionalChoiceValue
       }
+
       if (this.reserveChoiceValue) {
         payload.reserveValue = parseInt(this.reserveChoiceValue);
       } else {
