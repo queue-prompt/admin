@@ -7,14 +7,14 @@ const reportApi = () => {
     return axios.post(endPoint, { entityId, date })
   }
 
-  const _getExcelReport = (entityId, date) => {
+  const _getExcelReport = (entityId, date, type) => {
     const endPoint = cloudFunctionEndpoint + '/excelReport'
-    return axios.post(endPoint, { entityId, date })
+    return axios.post(endPoint, { entityId, date, type })
   }
 
-  const _getPDFReport = (entityId, date) => {
+  const _getPDFReport = (entityId, date, type) => {
     const endPoint = cloudFunctionEndpoint + '/pdfReport'
-    return axios.post(endPoint, { entityId, date })
+    return axios.post(endPoint, { entityId, date, type })
   }
 
   return {

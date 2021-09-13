@@ -24,11 +24,11 @@ export const actions = {
     try {
       dispatch('appState/toggleIsLoading', null, { root: true })
       let getData
-      const { entityId } = rootState.user
+      const { entityId,type } = rootState.user
       if (reportType === 'excel') {
-        getData = await reportApi()._getExcelReport(entityId, date)
+        getData = await reportApi()._getExcelReport(entityId, date, type)
       } else {
-        getData = await reportApi()._getPDFReport(entityId, date)
+        getData = await reportApi()._getPDFReport(entityId, date, type)
       }
       const downloadLink = getData.data
       FileSaver.saveAs(downloadLink, 'report')

@@ -1,8 +1,8 @@
 const cors = require('cors')({ origin: "*" })
-const fs = require('fs')
+const fs = require('fs').promises
 const os = require('os')
 const path =require('path')
-const Report = require("./classes/reportExcel")
+const ReportExcel = require("./classes/reportExcel")
 const ReportPDF = require("./classes/pdf.publish.report")
 const Axios = require('axios')
 const dayjs =require('dayjs')
@@ -32,12 +32,12 @@ exports.qrcode = functions.https.onRequest((req, res) => {
         } else {
           generateQRImage(tmpPath, entityId)
           const imageLink = await uploadFile(tmpPath, destinationPath, 'image/png')
-          fs.unlinkSync(tmpPath)
+          await fs.unlink(tmpPath)
           res.status(200).send(imageLink)
         }
       } catch (error) {
         console.log(error)
-        res.status(500).send(error)
+        res.status(500).send('internal server error')
       }
     } else {
       res.status(404).send('not found')
@@ -50,7 +50,7 @@ exports.pdfReport = functions.https.onRequest((req, res) => {
   return cors(req, res, async () => {
     if (true) {
       try {
-        const { entityId, date } = req.body
+        const { entityId, date, type } = req.body
         const { authorization } = req.headers
         const { data } = await Axios.post(databaseUrl + '/report/reserved', { entityId, date }, { headers: { authorization } })
         const { data: entityData } = await Axios.get(databaseUrl + `/entity/${entityId}?ts=${new Date().valueOf()}`, { headers: { authorization } })
@@ -58,14 +58,13 @@ exports.pdfReport = functions.https.onRequest((req, res) => {
         const tmpPath = path.join(tmp,tmpFileName)
         const destinationPath = `${entityId}/รายงาน.pdf`
         const pdf = new ReportPDF()
-        await pdf.main(entityData.organization, data, tmpFileName)
+        await pdf.main(entityData.organization, data, tmpFileName,type)
         const downloadLink = await uploadFile(tmpPath, destinationPath, 'application/pdf')
-        fs.unlink(tmpPath, () => {
-          res.status(200).send(downloadLink)
-        })
+        await fs.unlink(tmpPath)
+        res.status(200).send(downloadLink)
       } catch (error) {
         console.log(error)
-        res.status(500).send(error)
+        res.status(500).send('internal server error')
       }
     } else {
       res.status(404).send('not found')
@@ -78,22 +77,22 @@ exports.excelReport = functions.https.onRequest((req, res) => {
   return cors(req, res, async () => {
     if (true) {
       try {
-        const { entityId, date } = req.body
+        const { entityId, date, type } = req.body
         const { authorization } = req.headers
         const { data } = await Axios.post(databaseUrl + '/report/reserved', { entityId, date }, { headers: { authorization } })
         const { data: entityData } = await Axios.get(databaseUrl + `/entity/${entityId}?ts=${new Date().valueOf()}`, { headers: { authorization } })
         const tmpFileName = `${uuidV4()}.xlsx`
         const tmpPath = path.join(tmp,tmpFileName)
         const destinationPath = `${entityId}/รายงาน.xlsx`
-        const report = new Report('รายงานประจำวัน', entityData.organization, data)
+        const report = new ReportExcel('รายงานประจำวัน', entityData.organization, data,type)
         const buffer = await report.writeBuffer()
-        writeFile(tmp, tmpFileName, buffer)
+        await writeFile(tmp, tmpFileName, buffer)
         const downloadLink = await uploadFile(tmpPath, destinationPath, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        fs.unlinkSync(tmpPath)
+        await fs.unlink(tmpPath)
         res.status(200).send(downloadLink)
       } catch (error) {
         console.log(error)
-        res.status(500).send(error)
+        res.status(500).send('internal server error')
       }
     } else {
       res.status(404).send('not found')

@@ -17,7 +17,7 @@ module.exports = {
     header: {
       fontSize: 15,
       bold: true,
-      margin: [0, 10, 0, 5]
+      margin: [0, 5, 0, 5]
     },
     table: {
       margin: [0, 20, 0, 0]

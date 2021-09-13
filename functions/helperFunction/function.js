@@ -1,14 +1,12 @@
-const fs = require('fs')
+const fs = require('fs').promises
 const QRcode =require('qrcode')
 const {bucket} =require('../config/firebase')
 const dayjs  =require('dayjs')
 const {clientAppUrl} =require('../constant/constant')
 
 function writeFile(dir,filename,content){
-  fs.promises.mkdir(dir, { recursive: true }).catch(error => { console.error('caught exception : ', error.message); });
-  fs.writeFileSync(`${dir}`+'/'+filename, content, function (err) {
-      if (err) throw err;
-  });
+  fs.mkdir(dir, { recursive: true }).catch(error => { console.error('caught exception : ', error.message); });
+  return fs.writeFile(dir+'/'+filename,content)
 }
 
 function generateQRImage(filePath,entityId){
