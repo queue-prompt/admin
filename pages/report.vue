@@ -89,7 +89,7 @@
                   <th scope="col">ชื่อ-นามสกุล</th>
                   <th scope="col">เลขรหัสบัตรประชาชน</th>
                   <th scope="col">เบอร์โทรศัพท์</th>
-                  <th scope="col">กลุ่ม</th>
+                  <th v-if =" type === '100' || type === '200' " scope="col">กลุ่ม</th>
                   <th scope="col">ข้อมูลเพิ่มเติม</th>
                 </tr>
               </thead>
@@ -101,7 +101,7 @@
                   </td>
                   <td>{{ data.idCardNumber }}</td>
                   <td>{{ data.mobile }}</td>
-                  <td>{{ data.groupOf }}</td>
+                  <td v-if =" type === '100' || type === '200' ">{{ data.groupOf }}</td>
                   <td>{{data.remark}}</td>
                 </tr>
               </tbody>
@@ -137,6 +137,7 @@ export default {
   computed: {
     ...mapState({
       reportData: (state) => state.report.data,
+      type: (state) => state.user.type
     }),
   },
   mounted(){
