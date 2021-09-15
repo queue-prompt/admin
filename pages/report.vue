@@ -28,7 +28,7 @@
                         togglePopover({
                           placement: 'bottom',
                           showDelay: 0,
-                          hideDelay: 0,
+                          hideDelay: 0
                         })
                       "
                     />
@@ -82,32 +82,55 @@
 
         <div class="row mt-5">
           <div class="col-12">
-            <table v-if="reportData" class="table mt-3">
+            <div class="row">
+              <div class="col-6">
+                <span
+                  >ผลการค้นหา {{reportData.length}} รายการ</span
+                >
+              </div>
+              <div class="col-6">
+                <Pagination
+                  :currentPage="currentPage"
+                  position="justify-content-end"
+                  :prevFunction="prevPage"
+                  :nextFunction="nextPage"
+                  :disabledPrev="currentPage === 1"
+                  :disabledNext="maxPage==0?true:currentPage===maxPage?true:false"
+                />
+              </div>
+            </div>
+            <table v-if="reportData.length>0" class="table mt-3">
               <thead>
                 <tr>
+                  <th scope="col">ลำดับ</th>
                   <th scope="col">เวลา</th>
                   <th scope="col">ชื่อ-นามสกุล</th>
                   <th scope="col">เลขรหัสบัตรประชาชน</th>
                   <th scope="col">เบอร์โทรศัพท์</th>
-                  <th v-if =" type === '100' || type === '200' " scope="col">กลุ่ม</th>
+                  <th v-if="type === '100' || type === '200'" scope="col">
+                    กลุ่ม
+                  </th>
                   <th scope="col">ข้อมูลเพิ่มเติม</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(data, $dataIndex) in reportData" :key="$dataIndex">
+                <tr v-for="(data, $dataIndex) in displayData" :key="$dataIndex">
+                  <td>{{ $dataIndex + 1 }}</td>
                   <td>{{ convertTimeRangeFormat(data.time) }}</td>
                   <td>
                     {{ data.prefix }} {{ data.firstName }} {{ data.lastName }}
                   </td>
                   <td>{{ data.idCardNumber }}</td>
                   <td>{{ data.mobile }}</td>
-                  <td v-if =" type === '100' || type === '200' ">{{ data.groupOf }}</td>
-                  <td>{{data.remark}}</td>
+                  <td v-if="type === '100' || type === '200'">
+                    {{ data.groupOf }}
+                  </td>
+                  <td>{{ data.remark }}</td>
                 </tr>
               </tbody>
             </table>
             <div
-              v-else
+              v-else-if="!reportData.length"
               class="row"
               style="text-align: center; margin-top: 30px"
             >
@@ -115,6 +138,16 @@
                 <h4>ไม่พบข้อมูล</h4>
               </div>
             </div>
+          </div>
+
+          <div v-if="reportData.length>0" class="col-12">
+            <Pagination
+              :currentPage="currentPage"
+              :prevFunction="prevPage"
+              :nextFunction="nextPage"
+              :disabledPrev="currentPage === 1"
+              :disabledNext="maxPage==0?true:currentPage===maxPage?true:false"
+            />
           </div>
         </div>
       </div>
@@ -129,39 +162,77 @@ export default {
   data() {
     return {
       date: dayjs().format("YYYY-MM-DD"),
-      masks:{
-        input:'YYYY-MM-DD'
-      }
+      masks: {
+        input: "YYYY-MM-DD"
+      },
+      currentPage: 1,
+      itemsPerPage: 100
     };
   },
   computed: {
     ...mapState({
-      reportData: (state) => state.report.data,
-      type: (state) => state.user.type
+      reportData: state => state.report.data,
+      type: state => state.user.type
     }),
+    displayData() {
+      let start;
+      if (this.currentPage === 1) {
+        start = 0;
+      } else {
+        start = this.currentPage * this.itemsPerPage - this.itemsPerPage;
+      }
+      const end = start + this.itemsPerPage;
+      return this.reportData.slice(start, end);
+    },
+    maxPage() {
+      return Math.round(this.reportData.length / this.itemsPerPage);
+    }
   },
-  mounted(){
-    this.$store.dispatch("report/fetchReport",this.date);
+  mounted() {
+    this.$store.dispatch("report/fetchReport", this.date);
   },
   methods: {
-    selectDate(date) {
-      const formattedDate = dayjs(date).format("YYYY-MM-DD");
-      this.$store.dispatch("report/fetchReport", formattedDate);
+    prevPage() {
+      if (this.currentPage <= 1) {
+        return;
+      } else {
+        this.currentPage -= 1;
+      }
     },
-    convertTimeRangeFormat(time){
-    const startTime = time.slice(0,4)
-    const endTime = time.slice(5,9)
-    const formatTime =(time)=> {return [time.substring(0,2),':',time.substring(2,4)].join('').toString()}
-    return `${formatTime(startTime)}-${formatTime(endTime)}`
+    nextPage() {
+      if (this.currentPage >= this.maxPage) {
+        return;
+      } else {
+        this.currentPage += 1;
+      }
+    },
+    async selectDate(date) {
+      this.$store.dispatch("appState/toggleIsLoading", null)
+      this.currentPage = 1
+      const formattedDate = dayjs(date).format("YYYY-MM-DD");
+      await this.$store.dispatch("report/fetchReport", formattedDate);
+      setTimeout(()=>{
+        this.$store.dispatch("appState/toggleIsLoading", null)
+      },1000)
+    },
+    convertTimeRangeFormat(time) {
+      const startTime = time.slice(0, 4);
+      const endTime = time.slice(5, 9);
+      const formatTime = time => {
+        return [time.substring(0, 2), ":", time.substring(2, 4)]
+          .join("")
+          .toString();
+      };
+      return `${formatTime(startTime)}-${formatTime(endTime)}`;
     },
     getReport(reportType) {
       const formattedDate = dayjs(this.date).format("YYYY-MM-DD");
       this.$store.dispatch("report/getReport", {
         reportType,
-        date: formattedDate,
+        date: formattedDate
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
