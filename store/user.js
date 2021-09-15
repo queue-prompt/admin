@@ -89,15 +89,15 @@ export const actions = {
       dispatch("appState/toggleIsLoading", null, { root: true });
     }
   },
-  async init({ dispatch }) {
-    await dispatch("getAuthUser");
+  async init({ dispatch },entityId=null) {
+    await dispatch("getAuthUser",entityId);
     dispatch("report/fetchReport", null, { root: true });
     dispatch("preRegister/init", null, { root: true });
     dispatch("queueTable/init", null, { root: true });
 
     console.log("init user success");
   },
-  getAuthUser({ state, commit, dispatch }) {
+  getAuthUser({ state, commit, dispatch },entityId=null) {
     return new Promise(resolve => {
       const authListener = auth.onAuthStateChanged(async user => {
         if (user) {
@@ -105,8 +105,11 @@ export const actions = {
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
           if (!state.entityId) {
             const { data } = await userApi()._get(user.uid);
-            commit("setState", { stateName: "entityId", value: data.entityId });
-            commit("setState", { stateName: "email", value: user.email });
+            if(entityId){
+              commit("setState", { stateName: "entityId", value: entityId });
+            }else{
+              commit("setState", { stateName: "entityId", value: data.entityId });
+            }
             commit("setState", {
               stateName: "authListener",
               value: authListener

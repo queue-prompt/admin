@@ -53,6 +53,7 @@ export default {
   name: "TopNavbar",
   computed: {
     ...mapState({
+      user:(state) => state.auth.user,
       entityId: (state) => state.user.entityId,
       active: (state) => state.user.active,
       email: (state) => state.user.email,
@@ -81,7 +82,12 @@ export default {
     SwitchLabel,
   },
   mounted() {
-    this.$store.dispatch("user/init");
+    const entityId = this.$route.query.entityId
+    if(this.user && entityId){
+      this.$store.dispatch("user/init",entityId);
+    }else{
+      this.$store.dispatch("user/init");
+    }
   },
   methods: {
     async toggleActive(value) {

@@ -104,9 +104,6 @@ export default {
   created() {
     this.md = "# header";
   },
-  mounted(){
-    console.log('home')
-  }
 };
 </script>
 
