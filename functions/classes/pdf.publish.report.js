@@ -17,13 +17,13 @@ const tableLayout = {
       return i === 1 ? 'black' : '#aaa';
     },
     paddingLeft: function (i) {
-      return i === 0 ? 0 : 8;
+      return i === 0 ? 0 : 4;
     },
     paddingRight: function (i, node) {
-      return (i === node.table.widths.length - 1) ? 0 : 8;
+      return (i === node.table.widths.length - 1) ? 0 : 4;
     },
     fillColor: function (i, node) {
-      return (i % 2 !== 0) ? '#CCCCCC' : null;
+      return (i % 2 !== 0) ? '#ddd' : null;
     }
   }
 }
@@ -115,8 +115,6 @@ class ReportPDF extends PDF{
         widths.push(60)
       }else if(this.tableHeaders[i].text === 'ข้อมูลเพิ่มเติม'){
         widths.push('*')
-      }else if(this.tableHeaders[i].text === 'อายุ'){
-        widths.push(30)
       }else {
         widths.push('auto')
       }
