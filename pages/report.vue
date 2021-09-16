@@ -11,7 +11,7 @@
                 for="inputEmail2"
                 >เลือกวัน</label
               >
-              <div class="col-9 col-lg-10">
+              <div class="col-7 col-lg-8">
                 <v-date-picker
                   :masks="masks"
                   v-model="date"
@@ -34,6 +34,12 @@
                     />
                   </template>
                 </v-date-picker>
+              </div>
+
+              <div class="col-2 p-0">
+                <button class="btn btn-space btn-secondary btn-lg" style="width: 100%; height: 100%;">
+                  Refresh
+                </button>
               </div>
             </div>
             <div class="form-group row mt-2">
@@ -61,7 +67,7 @@
           </div>
           <div class="col-5 offset-lg-1">
             <div class="">
-              <h4 class="">การใช้งานรายงาน</h4>
+              <h4>การใช้งานรายงาน</h4>
               <ol class="">
                 <li class="">
                   ปริ้น A4 ( PDF ) รายชื่อผู้จองคิว ในวันนั้นในตอนเช้า
@@ -84,9 +90,14 @@
           <div class="col-12">
             <div class="row">
               <div class="col-6">
-                <span
-                  >ผลการค้นหา {{reportData.length}} รายการ</span
-                >
+                <div class="row">
+                  <div class="col-6">
+                    <span>วันที่ {{ date }} ผลการค้นหา {{reportData.length}} รายการ</span>
+                  </div>
+                  <div class="col-6">
+                    <span class="fst-italic" style="background: #eee; padding: 3px 5px;" v-if="generateAt">Generate At :  {{ generateAt }} น.</span>
+                  </div>
+                </div>
               </div>
               <div class="col-6">
                 <Pagination
@@ -166,7 +177,8 @@ export default {
         input: "YYYY-MM-DD"
       },
       currentPage: 1,
-      itemsPerPage: 100
+      itemsPerPage: 100,
+      generateAt: null
     };
   },
   computed: {
@@ -226,11 +238,15 @@ export default {
       return `${formatTime(startTime)}-${formatTime(endTime)}`;
     },
     getReport(reportType) {
+      this.generateAt = dayjs().format('YYYY-MM-DD HH:mm')
       const formattedDate = dayjs(this.date).format("YYYY-MM-DD");
       this.$store.dispatch("report/getReport", {
         reportType,
         date: formattedDate
       });
+    },
+    reloadReport() {
+      this.$store.dispatch("report/fetchReport", this.date);
     }
   }
 };

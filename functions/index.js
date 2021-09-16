@@ -122,3 +122,7 @@ exports.onCreateUser = functions.auth.user().onCreate((user)=>{
   .then(() => console.log("delivery user create notification email to system admin"))
   .catch((err)=> console.log('error occured',err))
 })
+
+
+
+exports.notification = require('./reserveNotification/index')

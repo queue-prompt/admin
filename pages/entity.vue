@@ -70,21 +70,6 @@
             <div class="form-group row">
               <label
                 class="col-12 col-sm-3 col-form-label text-sm-right"
-                for="inputTextarea3"
-                >ที่อยู่</label
-              >
-              <div class="col-12 col-sm-8 col-lg-6">
-                <textarea
-                  class="form-control"
-                  v-model="form.location.address"
-                  id="inputTextarea3"
-                ></textarea>
-              </div>
-            </div>
-
-                   <div class="form-group row">
-              <label
-                class="col-12 col-sm-3 col-form-label text-sm-right"
                 for="inputText3"
               >
                 รูปแบบการเปิดจอง
@@ -268,19 +253,17 @@
               >
               <div class="col-12 col-sm-8 col-lg-6">
                 <input class="form-control" v-model="form.price" type="text" />
-                <span class="card-subtitle">
+                <span class="card-subtitle mt-2">
                   ผู้มาใช้บริการจะชำระโดยตรงกับหน่วยงานโดยตรงในวันมาใช้บริการ,
                   หากไม่มีค่าใช้จ่ายให้ใส่ 0
                 </span>
               </div>
             </div>
-
-     
           </div>
 
           <!-- ช่วง 2  -->
           <div class="card-header card-header-divider">
-            ช่องทางการติดต่อ(สำหรับประชาชน)
+            ช่องทางการติดต่อ(สำหรับผู้มาใช้บริการ)
           </div>
           <div class="card-body">
             <form>
@@ -288,7 +271,7 @@
                 <label
                   class="col-12 col-sm-3 col-form-label text-sm-right"
                   for="inputText3"
-                  >เบอร์ติดต่อ</label
+                  >เบอร์ติดต่อ (สำหรับผู้มาใช้บริการ)</label
                 >
                 <div class="col-12 col-sm-8 col-lg-6">
                   <input
@@ -298,48 +281,22 @@
                   />
                 </div>
               </div>
-              <div class="form-group row">
-                <label
-                  class="col-12 col-sm-3 col-form-label text-sm-right"
-                  for="inputText3"
-                  >Website</label
-                >
-                <div class="col-12 col-sm-8 col-lg-6">
-                  <input
-                    class="form-control"
-                    v-model="form.citizenContact.website"
-                    type="text"
-                  />
-                </div>
-              </div>
 
               <div class="form-group row">
                 <label
                   class="col-12 col-sm-3 col-form-label text-sm-right"
                   for="inputText3"
-                  >Line ID</label
+                  >เบอร์ติดต่อ (สำหรับ Support ระบบ)</label
                 >
                 <div class="col-12 col-sm-8 col-lg-6">
                   <input
                     class="form-control"
-                    v-model="form.citizenContact.lineId"
+                    v-model="form.adminContact.phone"
                     type="text"
                   />
-                </div>
-              </div>
-
-              <div class="form-group row">
-                <label
-                  class="col-12 col-sm-3 col-form-label text-sm-right"
-                  for="inputText3"
-                  >Facebook</label
-                >
-                <div class="col-12 col-sm-8 col-lg-6">
-                  <input
-                    class="form-control"
-                    v-model="form.citizenContact.facebook"
-                    type="text"
-                  />
+                  <span class="card-subtitle mt-2">
+                    ทางทีมงาน คิวพร้อม.com ใช้ติดต่อเพื่อแจ้งอัพเดตระบบ
+                  </span>
                 </div>
               </div>
             </form>
@@ -347,24 +304,27 @@
 
           <!-- section3 -->
           <div class="card-header card-header-divider">
-            ช่องทางการติดต่อ (สำหรับ Support ระบบ)
-            <span class="card-subtitle"
-              >ทางทีมงาน คิวพร้อม.com ใช้ติดต่อเพื่อแจ้งอัพเดตระบบ</span
-            >
+            การแจ้งเตือน
           </div>
           <div class="card-body">
             <div class="form-group row">
               <label
                 class="col-12 col-sm-3 col-form-label text-sm-right"
                 for="inputText3"
-                >เบอร์โทร</label
+                >อีเมล์แจ้งเตือน</label
               >
               <div class="col-12 col-sm-8 col-lg-6">
                 <input
                   class="form-control"
-                  v-model="form.adminContact.phone"
+                  v-model="form.citizenContact.email"
                   type="text"
                 />
+                <span class="card-subtitle mt-2">
+                  แจ้งเตือนเมื่อ มีผู้ใช้บริการมาจองคิว
+                </span>
+                <span class="card-subtitle mt-2">
+                  หากต้องการใส่มากกว่า 1 email สามารถใส่เครื่องหมาย "," (comma)
+                </span>
               </div>
             </div>
 
@@ -410,7 +370,6 @@ export default {
     return {
       form: {
         organization: "",
-        location: { address: "" },
         image: null,
         type: null,
         price: "",
@@ -421,9 +380,9 @@ export default {
         },
         citizenContact: {
           phone: "",
-          website: "",
-          lineId: "",
-          facebook: "",
+          // website: "",
+          // lineId: "",
+          // facebook: "",
           email: ""
         },
         reserveMode: null,
@@ -497,7 +456,7 @@ export default {
     validateReserveValue(event){
       let result
       if(event.target.value){
-         const value = parseInt(event.target.value)
+      const value = parseInt(event.target.value)
       if(value <= 0){
         result = 1
       }else if(value >14){
@@ -522,7 +481,6 @@ export default {
         image = null,
         price,
         type,
-        location,
         reserveMode = 0,
         reserveValue = 1,
         reserveDate = null,
@@ -544,14 +502,18 @@ export default {
         this.date = `${reserveDate} ${reserveTime.slice(0,2)}:${reserveTime.slice(2,4)}`
       }
       const adminContact = { ...formValue.adminContact };
-      const citizenContact = { ...formValue.citizenContact };
+
+      const citizenContact = {
+        phone: formValue.citizenContact.phone ? formValue.citizenContact.phone : '',
+        email: formValue.citizenContact.email ? formValue.citizenContact.email : '',
+      };
+
       this.form = {
         ...this.form,
         organization,
         type,
         image,
         price,
-        location: { ...location },
         adminContact,
         citizenContact,
         reserveMode,
@@ -569,9 +531,6 @@ export default {
       reader.readAsDataURL(file);
       this.imageFile = file;
       alert("กด Submit เพื่อยืนยัน upload logo");
-    },
-    setPosition(position) {
-      this.form.location.position = position;
     },
     createUpdatePayload() {
       const payload = { ...this.form };
@@ -612,7 +571,7 @@ export default {
 </script>
 
 <style scoped>
->>> .vc-date{
+.vc-date{
   display: none !important;
 }
 </style>

@@ -70,10 +70,11 @@ function convertTimeRangeFormat(time){
   return `${formatTime(startTime)}-${formatTime(endTime)}`
 }
 
+
 module.exports={
   writeFile,
   generateQRImage,
   uploadFile,
   calAge,
-  convertTimeRangeFormat
+  convertTimeRangeFormat,
 }
