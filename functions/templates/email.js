@@ -1,50 +1,13 @@
-const { firestore, functions } = require('../config/firebase')
-const cors = require('cors')({ origin: "*" })
-const Axios = require('axios')
+const dayjs =require('dayjs')
 
-function getEmail(entityId) {
-  const p = new Promise(async (resolve, reject) => {
-    try {
-      const response = await Axios.get('https://api.xn--42c6cjhs2b6b5k.com/v1' + `/entity/${entityId}`)
-
-      const data = response.data
-      resolve(data.citizenContact.email)
-    }
-
-    catch(error) {
-      console.log(error)
-      reject()
-    }
-  })
-
-  return p
-}
-
-
-exports.reserveNotification = functions.https.onRequest((req, res) => {
-  return cors(req, res, async () => {
-    const formData = req.body
-    const emailNoti = await getEmail(formData.entityId)
-
-    if(emailNoti == '') {
-      res.status(200).send('email notification is empty')
-      return 
-    }
-
-    const replaceSpace = emailNoti.replace(/\s/g, '');
-    const emailList = replaceSpace.split(',');
-    const timeSplit = formData.time.split('-')
-    const timeFirst = `${timeSplit[0][0]}${timeSplit[0][1]}:${timeSplit[0][2]}${timeSplit[0][3]}`
-    const timeLast = `${timeSplit[1][0]}${timeSplit[1][1]}:${timeSplit[1][2]}${timeSplit[1][3]}`
-    const reserveTime = `${timeFirst}-${timeLast}`
-
-    firestore
-    .collection("mail")
-    .add({
-        to: emailList,
-        message: {
-          subject: `แจ้งเตือน มีผู้จองคิวใหม่จากระบบคิวพร้อม [${formData.registerCode ? formData.registerCode : ''}]`,
-          html: `
+function reserveEmailNotificationTemplate(to, formData,reserveTime) {
+  return {
+    to,
+    message: {
+      subject: `แจ้งเตือน มีผู้จองคิวใหม่จากระบบคิวพร้อม [${
+        formData.registerCode ? formData.registerCode : ""
+      }]`,
+      html: `
           <html lang="en" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml">
             <head>
             <title></title>
@@ -254,7 +217,9 @@ exports.reserveNotification = functions.https.onRequest((req, res) => {
           <td style="padding-bottom:15px;padding-right:10px;padding-top:15px;">
           <div style="font-family: sans-serif">
           <div style="font-size: 12px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-          <p style="margin: 0; font-size: 16px; text-align: right;">${formData.registerCode ? formData.registerCode : '-'}</p>
+          <p style="margin: 0; font-size: 16px; text-align: right;">${
+            formData.registerCode ? formData.registerCode : "-"
+          }</p>
           </div>
           </div>
           </td>
@@ -326,8 +291,12 @@ exports.reserveNotification = functions.https.onRequest((req, res) => {
             <td style="padding-bottom:15px;padding-right:10px;padding-top:15px;">
             <div style="font-family: sans-serif">
             <div style="font-size: 12px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-            <p style="margin: 0; font-size: 16px; text-align: right;">${formData.date ? formData.date : '-'}</p>
-            <p style="margin: 0; font-size: 16px; text-align: right;">${reserveTime ? reserveTime : '-'} น.</p>
+            <p style="margin: 0; font-size: 16px; text-align: right;">${
+              formData.date ? formData.date : "-"
+            }</p>
+            <p style="margin: 0; font-size: 16px; text-align: right;">${
+              reserveTime ? reserveTime : "-"
+            } น.</p>
             </div>
             </div>
             </td>
@@ -397,7 +366,9 @@ exports.reserveNotification = functions.https.onRequest((req, res) => {
             <td style="padding-bottom:15px;padding-right:10px;padding-top:15px;">
             <div style="font-family: sans-serif">
             <div style="font-size: 12px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-            <p style="margin: 0; font-size: 16px; text-align: right;">${formData.firstName ? formData.firstName : ''} ${formData.lastName ? formData.lastName : '-'}</p>
+            <p style="margin: 0; font-size: 16px; text-align: right;">${
+              formData.firstName ? formData.firstName : ""
+            } ${formData.lastName ? formData.lastName : "-"}</p>
             </div>
             </div>
             </td>
@@ -466,7 +437,9 @@ exports.reserveNotification = functions.https.onRequest((req, res) => {
             <td style="padding-bottom:15px;padding-left:5px;padding-right:5px;padding-top:15px;">
             <div style="font-family: sans-serif">
             <div style="font-size: 12px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-            <p style="margin: 0; font-size: 16px; text-align: right;"> ${formData.groupOf ? formData.groupOf : '-'}</p>
+            <p style="margin: 0; font-size: 16px; text-align: right;"> ${
+              formData.groupOf ? formData.groupOf : "-"
+            }</p>
             </div>
             </div>
             </td>
@@ -535,7 +508,9 @@ exports.reserveNotification = functions.https.onRequest((req, res) => {
             <td style="padding-bottom:15px;padding-left:5px;padding-right:5px;padding-top:15px;">
             <div style="font-family: sans-serif">
             <div style="font-size: 12px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-            <p style="margin: 0; font-size: 16px; text-align: right;"> ${formData.idCardNumber ? formData.idCardNumber : '-'}</p>
+            <p style="margin: 0; font-size: 16px; text-align: right;"> ${
+              formData.idCardNumber ? formData.idCardNumber : "-"
+            }</p>
             </div>
             </div>
             </td>
@@ -604,7 +579,9 @@ exports.reserveNotification = functions.https.onRequest((req, res) => {
             <td style="padding-bottom:15px;padding-left:10px;padding-right:10px;padding-top:15px;">
             <div style="font-family: sans-serif">
             <div style="font-size: 12px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-            <p dir="ltr" style="margin: 0; font-size: 16px; text-align: right;"> ${formData.mobile ? formData.mobile : '-'}</p>
+            <p dir="ltr" style="margin: 0; font-size: 16px; text-align: right;"> ${
+              formData.mobile ? formData.mobile : "-"
+            }</p>
             </div>
             </div>
             </td>
@@ -673,7 +650,9 @@ exports.reserveNotification = functions.https.onRequest((req, res) => {
             <td style="padding-bottom:15px;padding-left:10px;padding-right:10px;padding-top:15px;">
             <div style="font-family: sans-serif">
             <div style="font-size: 12px; color: #393d47; line-height: 1.2; font-family: Nunito, Arial, Helvetica Neue, Helvetica, sans-serif;">
-            <p style="margin: 0; font-size: 16px; text-align: right;"><span style="font-size:16px;"> ${formData.remark ? formData.remark : '-'}</span></p>
+            <p style="margin: 0; font-size: 16px; text-align: right;"><span style="font-size:16px;"> ${
+              formData.remark ? formData.remark : "-"
+            }</span></p>
             </div>
             </div>
             </td>
@@ -812,16 +791,33 @@ exports.reserveNotification = functions.https.onRequest((req, res) => {
             </table><!-- End -->
             </body>
           </html>
-          `,
-        },
-      })
-      .then(() => {
-        console.log("delivery user reserve queue notification email to system admin")
-        res.status(200).send('send email success')
-      })
-      .catch((err)=> {
-        console.log('error occured',err)
-        res.status(500).send(err)
-      })
-  })
-})
+          `
+    }
+  };
+}
+
+function userApplyNotificationEmailTemplate(to, userData) {
+  return {
+    to,
+    message: {
+      subject: "แจ้งเตือน มีผู้สมัครใหม่จากระบบคิวพร้อม",
+      html: `
+      <body>
+      <h1>แจ้งเตือนมีผู้ใช้งานใหม่</h1>
+      <h3>ข้อมูลผู้ใช้งานใหม่</h3>
+      <p>อีเมล ${user.email}</p>
+      <p>สมัครเข้าระบบคิวพร้อมวันที่ ${dayjs().format(
+        "YYYY-MM-DD HH:mm:ss"
+      )}</p>
+      <p>รหัสผู้ใช้งาน ${user.uid}</p>
+      </body>
+      `
+    }
+  };
+}
+
+
+module.exports ={
+  reserveEmailNotificationTemplate,
+  userApplyNotificationEmailTemplate
+}
