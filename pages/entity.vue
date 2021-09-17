@@ -263,7 +263,7 @@
 
           <!-- ช่วง 2  -->
           <div class="card-header card-header-divider">
-            ช่องทางการติดต่อ(สำหรับผู้มาใช้บริการ)
+            ช่องทางการติดต่อ
           </div>
           <div class="card-body">
             <form>
