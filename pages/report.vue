@@ -37,7 +37,11 @@
               </div>
 
               <div class="col-2 p-0">
-                <button class="btn btn-space btn-secondary btn-lg" style="width: 100%; height: 100%;">
+                <button 
+                  class="btn btn-space btn-secondary btn-lg" 
+                  style="width: 100%; height: 100%;" 
+                  @click="refreshReport"
+                >
                   Refresh
                 </button>
               </div>
@@ -92,10 +96,10 @@
               <div class="col-6">
                 <div class="row">
                   <div class="col-6">
-                    <span>วันที่ {{ date }} ผลการค้นหา {{reportData.length}} รายการ</span>
+                    <span>วันที่ {{ dateForShow }} ผลการค้นหา {{reportData.length}} รายการ</span>
                   </div>
                   <div class="col-6">
-                    <span class="fst-italic" style="background: #eee; padding: 3px 5px;" v-if="generateAt">Generate At :  {{ generateAt }} น.</span>
+                    <span class="fst-italic" style="background: #eee; padding: 3px 5px;" >Generate At :  {{ generateAt }} น.</span>
                   </div>
                 </div>
               </div>
@@ -114,6 +118,7 @@
               <thead>
                 <tr>
                   <th scope="col">ลำดับ</th>
+                  <th scope="col">รหัสจองคิว</th>
                   <th scope="col">เวลา</th>
                   <th scope="col">ชื่อ-นามสกุล</th>
                   <th scope="col">เลขรหัสบัตรประชาชน</th>
@@ -127,6 +132,7 @@
               <tbody>
                 <tr v-for="(data, $dataIndex) in displayData" :key="$dataIndex">
                   <td>{{ $dataIndex + 1 }}</td>
+                  <td>{{ data.registerCode }}</td>
                   <td>{{ convertTimeRangeFormat(data.time) }}</td>
                   <td>
                     {{ data.prefix }} {{ data.firstName }} {{ data.lastName }}
@@ -173,12 +179,13 @@ export default {
   data() {
     return {
       date: dayjs().format("YYYY-MM-DD"),
+      dateForShow: dayjs().format("YYYY-MM-DD"),
       masks: {
         input: "YYYY-MM-DD"
       },
       currentPage: 1,
       itemsPerPage: 100,
-      generateAt: null
+      generateAt: dayjs().format("YYYY-MM-DD HH:mm"),
     };
   },
   computed: {
@@ -222,6 +229,7 @@ export default {
       this.$store.dispatch("appState/toggleIsLoading", null)
       this.currentPage = 1
       const formattedDate = dayjs(date).format("YYYY-MM-DD");
+      this.dateForShow = formattedDate
       await this.$store.dispatch("report/fetchReport", formattedDate);
       setTimeout(()=>{
         this.$store.dispatch("appState/toggleIsLoading", null)
@@ -238,15 +246,16 @@ export default {
       return `${formatTime(startTime)}-${formatTime(endTime)}`;
     },
     getReport(reportType) {
-      this.generateAt = dayjs().format('YYYY-MM-DD HH:mm')
       const formattedDate = dayjs(this.date).format("YYYY-MM-DD");
       this.$store.dispatch("report/getReport", {
         reportType,
         date: formattedDate
       });
     },
-    reloadReport() {
-      this.$store.dispatch("report/fetchReport", this.date);
+    refreshReport() {
+      this.generateAt = dayjs().format('YYYY-MM-DD HH:mm')
+      const formatDate = dayjs(this.date).format('YYYY-MM-DD')
+      this.$store.dispatch("report/fetchReport", formatDate);
     }
   }
 };
