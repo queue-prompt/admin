@@ -228,6 +228,7 @@ export default {
     async selectDate(date) {
       this.$store.dispatch("appState/toggleIsLoading", null)
       this.currentPage = 1
+      this.generateAt = dayjs().format('YYYY-MM-DD HH:mm')
       const formattedDate = dayjs(date).format("YYYY-MM-DD");
       this.dateForShow = formattedDate
       await this.$store.dispatch("report/fetchReport", formattedDate);
@@ -253,9 +254,7 @@ export default {
       });
     },
     refreshReport() {
-      this.generateAt = dayjs().format('YYYY-MM-DD HH:mm')
-      const formatDate = dayjs(this.date).format('YYYY-MM-DD')
-      this.$store.dispatch("report/fetchReport", formatDate);
+      this.selectDate(this.date)
     }
   }
 };
