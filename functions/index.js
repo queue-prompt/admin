@@ -8,6 +8,7 @@ const ReportPDF = require("./classes/pdf.publish.report");
 const Axios = require("axios");
 const { firestore, bucket, functions } = require("./config/firebase");
 const { databaseUrl, systemAdminEmail } = require("./constant/constant");
+const {convertTimeRangeFormat} = require('./helperFunction/function')
 const {
   reserveEmailNotificationTemplate,
   userApplyNotificationEmailTemplate
@@ -142,17 +143,14 @@ exports.reserveNotification = functions.https.onRequest(
       );
       const emailNoti = data.citizenContact.email;
   
-      if (emailNoti == "") {
+      if (!emailNoti) {
         res.status(200).send("email notification is empty");
         return;
       }
   
       const replaceSpace = emailNoti.replace(/\s/g, "");
       const emailList = replaceSpace.split(",");
-      const timeSplit = formData.time.split("-");
-      const timeFirst = `${timeSplit[0][0]}${timeSplit[0][1]}:${timeSplit[0][2]}${timeSplit[0][3]}`;
-      const timeLast = `${timeSplit[1][0]}${timeSplit[1][1]}:${timeSplit[1][2]}${timeSplit[1][3]}`;
-      const reserveTime = `${timeFirst}-${timeLast}`;
+      const reserveTime = convertTimeRangeFormat(formData.time)
       const template = reserveEmailNotificationTemplate(
         emailList,
         formData,
@@ -167,13 +165,14 @@ exports.reserveNotification = functions.https.onRequest(
   })
   );
 
-exports.onCreateUser = functions.auth.user().onCreate(user => {
-  const template = userApplyNotificationEmailTemplate(systemAdminEmail, user);
-  firestore
-    .collection("mail")
-    .add(template)
-    .then(() =>
-      console.log("delivery user create notification email to system admin")
-    )
-    .catch(err => console.log("error occured", err));
+exports.onCreateUser = functions.auth.user().onCreate(async(user) => {
+  try{
+    const template = userApplyNotificationEmailTemplate(systemAdminEmail, user);
+    await firestore.collection("mail").add(template)
+    console.log("delivery user create notification email to system admin")
+    return
+  }catch(error){
+    console.log("notification email sending error", err)
+    return
+  }
 });

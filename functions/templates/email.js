@@ -4,7 +4,7 @@ function reserveEmailNotificationTemplate(to, formData,reserveTime) {
   return {
     to,
     message: {
-      subject: `แจ้งเตือน มีผู้จองคิวใหม่จากระบบคิวพร้อม [${
+      subject: `แจ้งเตือน มีผู้จองคิวใหม่จากระบบคิวพร้อม [${dayjs().format('YYYY-MM-DD')} ${
         formData.registerCode ? formData.registerCode : ""
       }]`,
       html: `
