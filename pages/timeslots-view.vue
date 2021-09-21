@@ -379,28 +379,23 @@ export default {
 
     async removeAll() {
       const { selectedRowDate: data, $store: store, entityId } = this
-      const array = _.values(data.time);
-      if (_.sumBy(array, (t) => t.reserve) != 0) {
-        return this.$swal.fire(
-          "ไม่สามารถลบวันได้ เนื่องจากมีการจองมาแล้ว",
-          "คุณสามารถลบแต่ละเวลาได้ กดปุ่มแก้ไข",
-          "error"
-        )
-      }
-
+        const {value:confirmDelete} = await this.$swal.fire({
+          title:'คุณแน่ใจหรือไม่ต้องการจะลบข้อมูลตารางเวลา',
+          input:'text',
+          html:'<h5>กรุณาดาวน์โหลดข้อมูลหรือสำรองข้อมูลรายงานของท่านก่อนลบ</h5><p style="color:red">กรุณาพิมพ์คำว่า <mark style="background:yellow; color:red">delete</mark> เพื่อลบข้อมูล</p>',
+          showCancelButton:true,
+          confirmButtonColor:'red',
+          inputPlaceholder:'delete',
+          inputValidator:(value)=>{
+            if(value !== 'delete'){
+              return 'กรุณาพิมพ์ใหม่อีกครั้ง'
+            }
+          }
+        })
       try {
         store.dispatch('appState/toggleIsLoading')
-        let promiseArr = []
-        _.forEach(data.time, (value, timeKey) => {
-          const promise = timeslotApi()._update(entityId, {
-            date: data.date,
-            time: timeKey,
-            action: 'remove'
-          })
-          promiseArr.push(promise)
-        })
-
-        await Promise.all(promiseArr)
+        if(confirmDelete){
+        await timeslotApi()._delete(entityId,data.date)
         await new Promise(resolve => {
           setTimeout(() => {
             this.lastUpdate = new Date().valueOf()
@@ -408,6 +403,8 @@ export default {
             resolve('')
           }, 3500)
         })
+       }
+       return
       } catch (e) {
         console.error(e)
         this.$swal.fire(

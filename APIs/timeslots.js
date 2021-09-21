@@ -30,12 +30,19 @@ const timeSlotApi = () => {
     return axios.put(fullEndpoint, showPayload)
   }
 
+  const _delete =(entityId,date) =>{
+    const fullEndpoint = `${baseEnpoint}/timeslots`
+    const payload = {entityId,date}
+    return axios.delete(fullEndpoint,{data:payload})
+  }
+
   return {
     baseEnpoint,
     _create,
     _get,
     _getAll,
-    _update
+    _update,
+    _delete
   }
 }
 
