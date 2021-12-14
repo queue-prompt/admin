@@ -226,10 +226,11 @@
                   <div v-if="selectedIdentityChoice!==0" class="mt-2">
                     <input
                       style="
-                        width: 50%;
+                        width: 100%;
                         padding: 5px;
                         border: 1px solid #bdc0c7;
                       "
+                      placeholder="Passsport No., รหัสสมาชิก, เลขบัตรประจำตัวคนต่างดาว"
                       :value="identityChoiceValue"
                       @change="(e) => (identityChoiceValue = e.target.value)"
                       type="text"
