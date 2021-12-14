@@ -74,7 +74,10 @@
               >
                 รูปแบบการเปิดจอง
               </label>
-              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1" style="max-width:400px">
+              <div
+                class="col-12 col-sm-8 col-lg-6 form-check mt-1"
+                style="max-width: 400px"
+              >
                 <label
                   v-for="(choice, $choiceIndex) in reserveChoice"
                   :key="$choiceIndex"
@@ -95,13 +98,17 @@
                     }}</span>
                     <div class="mt-2" v-show="selectedReserveChoice === 0">
                       <input
-                        style="width: 50%; padding: 5px; border: 1px solid #bdc0c7;"
+                        style="
+                          width: 50%;
+                          padding: 5px;
+                          border: 1px solid #bdc0c7;
+                        "
                         :readonly="selectedReserveChoice === 0 ? false : true"
                         type="number"
                         placeholder="วัน"
                         required
                         :value="reserveChoiceValue"
-                        @change="e => (reserveChoiceValue = e.target.value)"
+                        @change="(e) => (reserveChoiceValue = e.target.value)"
                         @input="validateReserveValue"
                       />
                     </div>
@@ -139,13 +146,13 @@
                             <template #default="{ inputValue, togglePopover }">
                               <input
                                 type="text"
-                                style=" padding: 5px; border: 1px solid #bdc0c7;"
+                                style="padding: 5px; border: 1px solid #bdc0c7"
                                 :value="inputValue"
                                 @click.stop="
                                   togglePopover({
                                     placement: 'bottom',
                                     showDelay: 0,
-                                    hideDelay: 0
+                                    hideDelay: 0,
                                   })
                                 "
                               />
@@ -154,25 +161,22 @@
                         </div>
                       </div>
 
-                        <div class="form-group-row">
-                        <label
-                          class="col-sm-3 col-form-label "
-                          for="inputText3"
-                        >
+                      <div class="form-group-row">
+                        <label class="col-sm-3 col-form-label" for="inputText3">
                           เวลา
                         </label>
                         <div class="col-12 col-sm-8 col-lg-6 mt-1">
                           <v-date-picker mode="time" v-model="date" is24hr>
-                              <template #default="{ inputValue, togglePopover }">
+                            <template #default="{ inputValue, togglePopover }">
                               <input
                                 type="text"
-                                style=" padding: 5px; border: 1px solid #bdc0c7;"
+                                style="padding: 5px; border: 1px solid #bdc0c7"
                                 :value="inputValue"
                                 @click.stop="
                                   togglePopover({
                                     placement: 'bottom',
                                     showDelay: 0,
-                                    hideDelay: 0
+                                    hideDelay: 0,
                                   })
                                 "
                               />
@@ -188,9 +192,62 @@
 
             <div class="form-group row pt-1 pb-1">
               <label class="col-12 col-sm-3 col-form-label text-sm-right"
+                >รูปแบบการยืนยันตัวตน</label
+              >
+              <div
+                class="col-12 col-sm-8 col-lg-6 form-check mt-1"
+                style="max-width: 350px"
+              >
+                <label class="custom-control custom-radio">
+                  <input
+                    @change="selectIdentityChoice"
+                    class="custom-control-input"
+                    type="radio"
+                    name="identity"
+                    :value="0"
+                    :checked="
+                      selectedIdentityChoice === 0 ? true : false
+                    "
+                  />
+                  <span class="custom-control-label">เลขบัตรประชาชน</span>
+                </label>
+                <label class="custom-control custom-radio">
+                  <input
+                    @change="selectIdentityChoice"
+                    class="custom-control-input"
+                    type="radio"
+                    name="identity"
+                    value="other"
+                    :checked="
+                      selectedIdentityChoice === 'other' ? true : false
+                    "
+                  />
+                  <span class="custom-control-label">กำหนดชื่อบริการเอง</span>
+                  <div v-if="selectedIdentityChoice!==0" class="mt-2">
+                    <input
+                      style="
+                        width: 50%;
+                        padding: 5px;
+                        border: 1px solid #bdc0c7;
+                      "
+                      :value="identityChoiceValue"
+                      @change="(e) => (identityChoiceValue = e.target.value)"
+                      type="text"
+                      required
+                    />
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group row pt-1 pb-1">
+              <label class="col-12 col-sm-3 col-form-label text-sm-right"
                 >ประเภทบริการ</label
               >
-              <div class="col-12 col-sm-8 col-lg-6 form-check mt-1" style="max-width:350px">
+              <div
+                class="col-12 col-sm-8 col-lg-6 form-check mt-1"
+                style="max-width: 350px"
+              >
                 <label
                   v-for="(choice, $choiceIndex) in radioChoice"
                   :key="$choiceIndex"
@@ -215,14 +272,18 @@
                       v-show="selectedOptionalChoice == 'other'"
                     >
                       <input
-                        style="width: 50%; padding: 5px; border: 1px solid #bdc0c7;"
+                        style="
+                          width: 50%;
+                          padding: 5px;
+                          border: 1px solid #bdc0c7;
+                        "
                         :readonly="
                           selectedOptionalChoice === 'other' ? false : true
                         "
                         type="text"
                         required
                         :value="optionalChoiceValue"
-                        @change="e => (optionalChoiceValue = e.target.value)"
+                        @change="(e) => (optionalChoiceValue = e.target.value)"
                       />
                     </div>
                   </template>
@@ -262,9 +323,7 @@
           </div>
 
           <!-- ช่วง 2  -->
-          <div class="card-header card-header-divider">
-            ช่องทางการติดต่อ
-          </div>
+          <div class="card-header card-header-divider">ช่องทางการติดต่อ</div>
           <div class="card-body">
             <form>
               <div class="form-group row">
@@ -303,9 +362,7 @@
           </div>
 
           <!-- section3 -->
-          <div class="card-header card-header-divider">
-            การแจ้งเตือน
-          </div>
+          <div class="card-header card-header-divider">การแจ้งเตือน</div>
           <div class="card-body">
             <div class="form-group row">
               <label
@@ -372,54 +429,57 @@ export default {
         organization: "",
         image: null,
         type: null,
-        price: "",
+        price: 0,
         adminContact: {
           name: "",
           phone: "",
-          alt: ""
+          alt: "",
         },
         citizenContact: {
           phone: "",
           // website: "",
           // lineId: "",
           // facebook: "",
-          email: ""
+          email: "",
         },
+        identityType: 0,
         reserveMode: null,
         reserveValue: "",
         reserveDate: null,
-        reserveTime: null
+        reserveTime: null,
       },
       date: dayjs().toISOString(),
-      masks:{
-        input:'YYYY-MM-DD'
+      masks: {
+        input: "YYYY-MM-DD",
       },
       imageFile: null,
+      selectedIdentityChoice: 0,
       selectedOptionalChoice: null,
       selectedReserveChoice: null,
+      identityChoiceValue: null,
       reserveChoiceValue: null,
       optionalChoiceValue: null,
       adminContactPart: [
         { text: "ชื่อ", value: "name", type: "text" },
         { text: "เบอร์โทร", value: "phone", type: "text" },
-        { text: "สำรอง", value: "alt", type: "text" }
+        { text: "สำรอง", value: "alt", type: "text" },
       ],
       citizenContactPart: [
         { text: "เบอร์โทร", value: "phone", type: "text" },
         { text: "เว็ปไซต์", value: "website", type: "text" },
         { text: "line Id", value: "lineId", type: "text" },
         { text: "facebook", value: "facebook", type: "text" },
-        { text: "email", value: "email", type: "email" }
+        { text: "email", value: "email", type: "email" },
       ],
       radioChoice: [
         { text: "กำหนดชื่อบริการเอง", value: "other" },
         { text: "จองตรวจโควิด", value: "100" },
-        { text: "จองฉีดวัคซีน", value: "200" }
+        { text: "จองฉีดวัคซีน", value: "200" },
       ],
       reserveChoice: [
         { text: "เปิดจองล่วงหน้าแบบจำกัดวัน(สูงสุด 14 วัน)", value: 0 },
-        { text: "เปิดจองทั้งหมดพร้อมกัน", value: 1 }
-      ]
+        { text: "เปิดจองทั้งหมดพร้อมกัน", value: 1 },
+      ],
     };
   },
   mounted() {
@@ -430,17 +490,18 @@ export default {
       handler(newValue) {
         this.setFormValue(newValue);
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   computed: {
     ...mapState({
-      userData: state => state.user
-    })
+      userData: (state) => state.user,
+    }),
   },
   methods: {
     updateInfo() {
       const updatePayload = this.createUpdatePayload();
+      console.log(updatePayload);
       this.$store.dispatch("user/updateUserInfo", updatePayload);
     },
     removeLogo() {
@@ -453,26 +514,34 @@ export default {
       this.selectedOptionalChoice = value;
       this.form.type = value;
     },
-    validateReserveValue(event){
-      let result
-      if(event.target.value){
-      const value = parseInt(event.target.value)
-      if(value <= 0){
-        result = 1
-      }else if(value >14){
-        result = 14
-      }else{
-        result = event.target.value
-      } 
-      }else{
-        result = null
+    validateReserveValue(event) {
+      let result;
+      if (event.target.value) {
+        const value = parseInt(event.target.value);
+        if (value <= 0) {
+          result = 1;
+        } else if (value > 14) {
+          result = 14;
+        } else {
+          result = event.target.value;
+        }
+      } else {
+        result = null;
       }
-      event.target.value = result
+      event.target.value = result;
     },
     selectReserveChoice(event) {
       const value = parseInt(event.target.value);
       this.selectedReserveChoice = value;
       this.form.reserveMode = value;
+    },
+    selectIdentityChoice(event){
+      let value = event.target.value
+      if(parseInt(event.target.value) === 0){
+        value = parseInt(event.target.value)
+      }
+      this.selectedIdentityChoice = value;
+      this.form.identityType = value;
     },
     async setFormValue(formValue) {
       const localForm = { ...formValue };
@@ -481,11 +550,12 @@ export default {
         image = null,
         price,
         type,
+        identityType = 0,
         reserveMode = 0,
         reserveValue = 1,
         reserveDate = null,
-        reserveTime = null
-      } = localForm; 
+        reserveTime = null,
+      } = localForm;
       if (type) {
         if (type === "100" || type === "200") {
           this.selectedOptionalChoice = type;
@@ -494,18 +564,33 @@ export default {
           this.selectedOptionalChoice = "other";
         }
       }
-      if(reserveMode === 0){
-        this.reserveChoiceValue = reserveValue
-      } 
+
+      console.log(identityType)
+
+      if(identityType !==0){
+        this.selectedIdentityChoice = "other";
+        this.identityChoiceValue = identityType;
+      }
+
+      if (reserveMode === 0) {
+        this.reserveChoiceValue = reserveValue;
+      }
       this.selectedReserveChoice = reserveMode;
-      if(reserveDate && reserveTime){
-        this.date = `${reserveDate} ${reserveTime.slice(0,2)}:${reserveTime.slice(2,4)}`
+      if (reserveDate && reserveTime) {
+        this.date = `${reserveDate} ${reserveTime.slice(
+          0,
+          2
+        )}:${reserveTime.slice(2, 4)}`;
       }
       const adminContact = { ...formValue.adminContact };
 
       const citizenContact = {
-        phone: formValue.citizenContact.phone ? formValue.citizenContact.phone : '',
-        email: formValue.citizenContact.email ? formValue.citizenContact.email : '',
+        phone: formValue.citizenContact.phone
+          ? formValue.citizenContact.phone
+          : "",
+        email: formValue.citizenContact.email
+          ? formValue.citizenContact.email
+          : "",
       };
 
       this.form = {
@@ -515,11 +600,12 @@ export default {
         image,
         price,
         adminContact,
+        identityType,
         citizenContact,
         reserveMode,
         reserveValue,
         reserveDate,
-        reserveTime
+        reserveTime,
       };
     },
     inputImage(event) {
@@ -534,26 +620,31 @@ export default {
     },
     createUpdatePayload() {
       const payload = { ...this.form };
-      if(payload.type === 'other'){
-        payload.type =this.optionalChoiceValue
+      if (payload.type === "other") {
+        payload.type = this.optionalChoiceValue;
       }
 
       if (this.reserveChoiceValue) {
         payload.reserveValue = parseInt(this.reserveChoiceValue);
       } else {
-        delete payload['reserveValue']
-      }
-      
-      if(payload.reserveMode === 1){
-        const date = dayjs(this.date).format('YYYY-MM-DD')
-        const time = dayjs(this.date).format('HHmm')
-        payload.reserveDate =date
-        payload.reserveTime = time
-      }else{
-        delete payload['reserveDate']
-        delete payload['reserveTime']
+        delete payload["reserveValue"];
       }
 
+      if(payload.identityType === "other"){
+        payload.identityType = this.identityChoiceValue;
+      }
+      
+      payload.price = parseInt(payload.price);
+
+      if (payload.reserveMode === 1) {
+        const date = dayjs(this.date).format("YYYY-MM-DD");
+        const time = dayjs(this.date).format("HHmm");
+        payload.reserveDate = date;
+        payload.reserveTime = time;
+      } else {
+        delete payload["reserveDate"];
+        delete payload["reserveTime"];
+      }
 
       if (this.imageFile) {
         payload.image = this.imageFile;
@@ -565,13 +656,13 @@ export default {
     },
     cancelForm() {
       window.location.reload();
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.vc-date{
+.vc-date {
   display: none !important;
 }
 </style>
