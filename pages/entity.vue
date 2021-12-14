@@ -501,7 +501,6 @@ export default {
   methods: {
     updateInfo() {
       const updatePayload = this.createUpdatePayload();
-      console.log(updatePayload);
       this.$store.dispatch("user/updateUserInfo", updatePayload);
     },
     removeLogo() {
@@ -565,7 +564,6 @@ export default {
         }
       }
 
-      console.log(identityType)
 
       if(identityType !==0){
         this.selectedIdentityChoice = "other";
