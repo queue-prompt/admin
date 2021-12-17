@@ -170,6 +170,9 @@ export default {
   async created() {
     this.rowsDate = this.computeMoreDaysFromToday(14);
   },
+  mounted(){
+    this.submitNext()
+  },
   methods: {
     submitNext() {
       if (this.dataStep === 3) {

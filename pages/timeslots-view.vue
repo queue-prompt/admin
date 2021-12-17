@@ -7,10 +7,7 @@
             <div class="form-group row pt-1">
               <h4 class="col-4 text-right pt-1">เลือกเดือน</h4>
               <div class="col-8">
-                <select
-                  v-model="pickMonth"
-                  style="width: 100%; height: 32px"
-                >
+                <select v-model="pickMonth" style="width: 100%; height: 32px">
                   <option
                     :value="m.value"
                     v-for="m in monthList"
@@ -119,10 +116,7 @@
               </div>
               <div class="col-6">
                 <div class="d-flex justify-content-end" style="gap: 16px">
-                  <button
-                    class="btn btn-secondary"
-                    @click="handlleReloadTime"
-                  >
+                  <button class="btn btn-secondary" @click="handlleReloadTime">
                     <i class="fas fa-redo-alt"></i> Reload
                   </button>
 
@@ -134,7 +128,11 @@
                     {{ editMode ? "ออกจากแก้ไข" : "แก้ไข" }}
                   </button>
 
-                  <button :disabled="!selectedRowDate.time" class="btn btn-danger" @click="removeAll">
+                  <button
+                    :disabled="!selectedRowDate.time"
+                    class="btn btn-danger"
+                    @click="removeAll"
+                  >
                     ลบวัน
                   </button>
                 </div>
@@ -148,7 +146,7 @@
               v-if="selectedRowDate && !editMode"
               :timeslot-holder="selectedRowDate.time"
             />
-            
+
             <add-timeslots
               v-if="rowsTime && editMode"
               :rowsTime="rowsTime"
@@ -196,14 +194,14 @@
 <script>
 import moment from "moment";
 import _ from "lodash";
-import timeslotApi from '../APIs/timeslots'
+import timeslotApi from "../APIs/timeslots";
 import { timeHolderTransformToRowsTime } from "../utility/functions/queueTableTransform";
 import CardDetailTimeslots from "../components/QueueTable/CardDetailTimeslots.vue";
-import AddTimeslots from '../components/QueueTable/AddTimeslots.vue'
+import AddTimeslots from "../components/QueueTable/AddTimeslots.vue";
 import DateListSelect from "../components/QueueTable/DateListSelect.vue";
 import Intro from "../components/QueueTable/Intorduction.vue";
 import Button from "../components/Button.vue";
-import { formatMonthEngToThai } from '../utility/functions/format'
+import { formatMonthEngToThai } from "../utility/functions/format";
 
 export default {
   components: {
@@ -220,14 +218,9 @@ export default {
       rowsTime: null,
       editMode: false,
       pickMonth: moment().format("YYYY-MM-DD"),
-      monthList: [0, 1, 2].map((i) => {
-        return {
-          display: moment().add(i, "month").format("MMMM YYYY"),
-          value: moment().add(i, "month").format("YYYY-MM-DD"),
-        }
-      }),
+      monthList: this.generateMonthList(13),
       todayDate: moment().format("YYYY-MM-DD"),
-      lastUpdate: new Date().valueOf()
+      lastUpdate: new Date().valueOf(),
     };
   },
   computed: {
@@ -249,171 +242,177 @@ export default {
       );
     },
     createdDate() {
-      return this.$store.state.queueTable.createdDate
+      return this.$store.state.queueTable.createdDate;
     },
-    entityId () {
-      return this.$store.state.user.entityId
-    }
+    entityId() {
+      return this.$store.state.user.entityId;
+    },
   },
   watch: {
-    lastUpdate (myVal) {
-      this.fetchAll()
-    }
+    lastUpdate(myVal) {
+      this.fetchAll();
+    },
   },
   beforeMount() {
     this.init();
   },
   methods: {
     async init() {
-      const { todayDate } = this
+      const { todayDate } = this;
       this.submitSelectRowDate({
         date: todayDate,
         ...this.createdDate[todayDate],
-      })
+      });
+    },
+
+    generateMonthList(length) {
+      return [...Array(length).keys()].map((i) => {
+        return {
+          display: moment().add(i, "month").format("MMMM YYYY"),
+          value: moment().add(i, "month").format("YYYY-MM-DD"),
+        };
+      });
     },
 
     async handleActive() {
       const { selectedRowDate, entityId, $store: store } = this;
       const date = selectedRowDate.date;
-      
+
       try {
-        store.dispatch('appState/toggleIsLoading')
+        store.dispatch("appState/toggleIsLoading");
         await timeslotApi()._update(entityId, {
           date,
-          action: 'active',
-          value: selectedRowDate.active
-        })
-        await new Promise(resolve => {
+          action: "active",
+          value: selectedRowDate.active,
+        });
+        await new Promise((resolve) => {
           setTimeout(() => {
             this.showToastSuccess(
               `ระบบทำการ (${selectedRowDate.active ? "เปิด" : "ปิด"}) สำเร็จ`,
               1500
-            )
-            this.lastUpdate = new Date().valueOf()
-            resolve('')
-          }, 1500)
-        })
+            );
+            this.lastUpdate = new Date().valueOf();
+            resolve("");
+          }, 1500);
+        });
       } catch (e) {
-        console.error('handle active error: ', e)
-        this.$swal.fire("เกิดข้อผิดพลาด", "กรุณาลองใหม่อีกครั้ง", "error")
+        console.error("handle active error: ", e);
+        this.$swal.fire("เกิดข้อผิดพลาด", "กรุณาลองใหม่อีกครั้ง", "error");
       } finally {
-        store.dispatch('appState/toggleIsLoading')
+        store.dispatch("appState/toggleIsLoading");
       }
     },
 
     async submitSaveSingleRowTime({ row, indexAt }) {
       const { selectedRowDate, entityId, $store: store } = this;
       const date = selectedRowDate.date;
-      const time =
-        this.formatTime(row.start) + "-" + this.formatTime(row.end);
-      const action = row.new ? 'insert' : 'open'
+      const time = this.formatTime(row.start) + "-" + this.formatTime(row.end);
+      const action = row.new ? "insert" : "open";
 
       try {
-        store.dispatch('appState/toggleIsLoading')
+        store.dispatch("appState/toggleIsLoading");
         await timeslotApi()._update(entityId, {
           date,
           time,
           action,
-          value: row.limit
-        })
+          value: row.limit,
+        });
         await new Promise((resolve, reject) => {
           setTimeout(() => {
-            this.lastUpdate = new Date().valueOf()
-            action == 'insert' ? row.new = false : ''
-            this.selectedRowDate.time[time] = { open: row.limit, reserve: row.reserve || 0 }
+            this.lastUpdate = new Date().valueOf();
+            action == "insert" ? (row.new = false) : "";
+            this.selectedRowDate.time[time] = {
+              open: row.limit,
+              reserve: row.reserve || 0,
+            };
             this.$swal.fire(
               "สำเร็จ",
               `ระบบทำการบันทึกข้อมูลแถวที่ ${indexAt + 1} สำเร็จ`,
               "success"
-            )
-            resolve('')
-          }, 1000)
-        })
+            );
+            resolve("");
+          }, 1000);
+        });
       } catch (e) {
-        console.error(e)
+        console.error(e);
         this.$swal.fire(
           "ไม่สามารถบันทึกได้",
           "ไม่สามารถลดจำนวนเปิดรับให้น้อยกว่าจำนวนผู้ลงทะเบียนเข้า",
           "error"
-        )
+        );
       } finally {
-        store.dispatch('appState/toggleIsLoading')
+        store.dispatch("appState/toggleIsLoading");
       }
     },
 
     async submitRemoveRowTime({ row, indexAt }) {
       const { selectedRowDate, entityId, $store: store } = this;
       const date = selectedRowDate.date;
-      const time = 
-        this.formatTime(row.start) + "-" + this.formatTime(row.end)
+      const time = this.formatTime(row.start) + "-" + this.formatTime(row.end);
 
       try {
-        store.dispatch('appState/toggleIsLoading')
+        store.dispatch("appState/toggleIsLoading");
         await timeslotApi()._update(entityId, {
           date,
           time,
-          action: 'remove'
-        })
+          action: "remove",
+        });
         await new Promise((resolve, reject) => {
           setTimeout(() => {
-            this.lastUpdate = new Date().valueOf()
-            this.rowsTime.splice(indexAt, 1)
-            this.selectedRowDate.time[time] = { open: 0, reserve: 0 }
+            this.lastUpdate = new Date().valueOf();
+            this.rowsTime.splice(indexAt, 1);
+            this.selectedRowDate.time[time] = { open: 0, reserve: 0 };
             this.showToastSuccess(
               `ระบบทำการลบเวลา ${row.start}-${row.end} สำเร็จ`,
               1500
-            )
-            resolve('')
-          }, 1500)
-        })
+            );
+            resolve("");
+          }, 1500);
+        });
       } catch (e) {
         this.$swal.fire(
           "ไม่สามารถลบได้",
           "เนื่องจากมีผู้ลงทะเบียนแล้ว",
           "error"
-        )
+        );
       } finally {
-        store.dispatch('appState/toggleIsLoading')
+        store.dispatch("appState/toggleIsLoading");
       }
     },
 
     async removeAll() {
-      const { selectedRowDate: data, $store: store, entityId } = this
-        const {value:confirmDelete} = await this.$swal.fire({
-          title:'คุณแน่ใจหรือไม่ต้องการจะลบข้อมูลตารางเวลา',
-          input:'text',
-          html:'<h5>กรุณาดาวน์โหลดข้อมูลหรือสำรองข้อมูลรายงานของท่านก่อนลบ</h5><p style="color:red">กรุณาพิมพ์คำว่า <mark style="background:yellow; color:red">delete</mark> เพื่อลบข้อมูล</p>',
-          showCancelButton:true,
-          confirmButtonColor:'red',
-          inputPlaceholder:'delete',
-          inputValidator:(value)=>{
-            if(value !== 'delete'){
-              return 'กรุณาพิมพ์ใหม่อีกครั้ง'
-            }
+      const { selectedRowDate: data, $store: store, entityId } = this;
+      const { value: confirmDelete } = await this.$swal.fire({
+        title: "คุณแน่ใจหรือไม่ต้องการจะลบข้อมูลตารางเวลา",
+        input: "text",
+        html: '<h5>กรุณาดาวน์โหลดข้อมูลหรือสำรองข้อมูลรายงานของท่านก่อนลบ</h5><p style="color:red">กรุณาพิมพ์คำว่า <mark style="background:yellow; color:red">delete</mark> เพื่อลบข้อมูล</p>',
+        showCancelButton: true,
+        confirmButtonColor: "red",
+        inputPlaceholder: "delete",
+        inputValidator: (value) => {
+          if (value !== "delete") {
+            return "กรุณาพิมพ์ใหม่อีกครั้ง";
           }
-        })
+        },
+      });
       try {
-        store.dispatch('appState/toggleIsLoading')
-        if(confirmDelete){
-        await timeslotApi()._delete(entityId,data.date)
-        await new Promise(resolve => {
-          setTimeout(() => {
-            this.lastUpdate = new Date().valueOf()
-            this.selectedRowDate.time = {}
-            resolve('')
-          }, 3500)
-        })
-       }
-       return
+        store.dispatch("appState/toggleIsLoading");
+        if (confirmDelete) {
+          await timeslotApi()._delete(entityId, data.date);
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              this.lastUpdate = new Date().valueOf();
+              this.selectedRowDate.time = {};
+              resolve("");
+            }, 3500);
+          });
+        }
+        return;
       } catch (e) {
-        console.error(e)
-        this.$swal.fire(
-          "เกิดข้อผิดพลาด",
-          "กรุณาลองใหม่อีกครั้ง",
-          "error"
-        )
+        console.error(e);
+        this.$swal.fire("เกิดข้อผิดพลาด", "กรุณาลองใหม่อีกครั้ง", "error");
       } finally {
-        store.dispatch('appState/toggleIsLoading')
+        store.dispatch("appState/toggleIsLoading");
       }
     },
 
@@ -427,9 +426,9 @@ export default {
     },
 
     async submitSelectRowDate(row) {
-      this.clickDate = row.date
-      this.selectedRowDate = await this.fetchSingleDateTimeslots(row.date)
-      this.editMode = false
+      this.clickDate = row.date;
+      this.selectedRowDate = await this.fetchSingleDateTimeslots(row.date);
+      this.editMode = false;
     },
 
     async submitEditRowsTime() {
@@ -438,40 +437,42 @@ export default {
       if (!editMode) {
         const rowsTime = timeHolderTransformToRowsTime(
           this.selectedRowDate.time
-        )
+        );
         const sort = _.orderBy(rowsTime, "start", "asc");
-        this.rowsTime = sort
+        this.rowsTime = sort;
       } else {
-        this.selectedRowDate = await this.fetchSingleDateTimeslots(this.clickDate)
+        this.selectedRowDate = await this.fetchSingleDateTimeslots(
+          this.clickDate
+        );
       }
 
       this.editMode = !this.editMode;
     },
 
     async handleReloadDate() {
-      this.$store.dispatch("appState/toggleIsLoading")
-      await this.$store.dispatch("queueTable/fetchCreatedDate")
-      this.$store.dispatch("appState/toggleIsLoading")
+      this.$store.dispatch("appState/toggleIsLoading");
+      await this.$store.dispatch("queueTable/fetchCreatedDate");
+      this.$store.dispatch("appState/toggleIsLoading");
     },
 
-    async handlleReloadTime () {
-      const { $store: store, clickDate, rowsTime } = this
-      store.dispatch("appState/toggleIsLoading")
-      this.selectedRowDate = await this.fetchSingleDateTimeslots(clickDate)
-      const sort = _.orderBy(rowsTime, 'start', 'asc')
-      this.rowsTime = sort
-      store.dispatch("appState/toggleIsLoading")
+    async handlleReloadTime() {
+      const { $store: store, clickDate, rowsTime } = this;
+      store.dispatch("appState/toggleIsLoading");
+      this.selectedRowDate = await this.fetchSingleDateTimeslots(clickDate);
+      const sort = _.orderBy(rowsTime, "start", "asc");
+      this.rowsTime = sort;
+      store.dispatch("appState/toggleIsLoading");
     },
 
     formatTime(time) {
       const [hour, min] = time.split(":");
-      return hour + min
+      return hour + min;
     },
 
     showToastSuccess(content, delay) {
       this.$toast.success(content, {
         duration: delay || 2000,
-      })
+      });
     },
 
     showAlertConfirm(title, text, icon) {
@@ -487,28 +488,30 @@ export default {
       });
     },
 
-    formatMonth (MMyyyy) {
-      const [MM, yyyy] = MMyyyy.split(' ')
-      const formated = formatMonthEngToThai(MM)
-      return formated + yyyy
+    formatMonth(MMyyyy) {
+      const [MM, yyyy] = MMyyyy.split(" ");
+      const formated = formatMonthEngToThai(MM);
+      return `${formated} ${yyyy}`;
     },
 
     fetchAll() {
       return new Promise(async (resolve) => {
-        await this.$store.dispatch("queueTable/fetchCreatedDate")
-        this.selectedRowDate = await this.fetchSingleDateTimeslots(this.clickDate)
-        resolve('')
-      })
+        await this.$store.dispatch("queueTable/fetchCreatedDate");
+        this.selectedRowDate = await this.fetchSingleDateTimeslots(
+          this.clickDate
+        );
+        resolve("");
+      });
     },
 
     async fetchSingleDateTimeslots(date) {
-      const { data } = await timeslotApi()._get(this.entityId, date)
+      const { data } = await timeslotApi()._get(this.entityId, date);
       const newData = {
         ...data,
-        active: data && data.active != undefined ? data.active : true
-      }
-      return newData || {}
-    }
+        active: data && data.active != undefined ? data.active : true,
+      };
+      return newData || {};
+    },
   },
 };
 </script>

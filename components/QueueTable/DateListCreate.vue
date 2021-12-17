@@ -1,11 +1,19 @@
 <template>
   <div class="row">
-    <div class="col-2"> </div>
+    <div class="col-2"></div>
     <div class="col-8">
       <div class="calendar mb-5 pb-5">
         <header class="text-left">
           <span class="mr-5">เลือกเดือน</span>
-          <button
+          <select
+            @change="(e) => changeMonth(e.target.value)"
+            style="max-width: 30%; height: 32px"
+          >
+            <option :selected="m.value===selectedMonth" :value="m.value" v-for="m in monthList" :key="m.value">
+              {{ formatMonth(m.display) }}
+            </option>
+          </select>
+          <!-- <button
             class="btn btn-space btn-secondary hover"
             :class="{ active: m == selectedMonth }"
             v-for="(m, index) in monthList"
@@ -13,7 +21,7 @@
             @click="changeMonth(m)"
           >
             {{ displayMonthThai(m) }}
-          </button>
+          </button> -->
         </header>
 
         <ul class="weekdays">
@@ -54,7 +62,9 @@
             <p class="selected" v-if="tmpDate[d]">
               <span class="mdi mdi-check"></span>
             </p>
-            <p v-if="!createdDate[d] && !tmpDate[d] && d > today" class="free">ว่าง</p>
+            <p v-if="!createdDate[d] && !tmpDate[d] && d > today" class="free">
+              ว่าง
+            </p>
           </li>
         </ol>
       </div>
@@ -66,7 +76,7 @@
 <script>
 import moment from "moment";
 import _ from "lodash";
-import { formatMonthEngToThai } from '../../utility/functions/format'
+import { formatMonthEngToThai } from "../../utility/functions/format";
 
 export default {
   props: {
@@ -87,15 +97,14 @@ export default {
       startDay: _.range(0, 2),
       daysLength: [],
       rowsDateData: [],
-      monthList: [moment().format('YYYY-MM'), moment().add({ months: 1 }).format('YYYY-MM')],
-
+      monthList: this.generateMonthList(13),
       selectedDate: {},
       selectedMonth: "",
-      today: moment().format('YYYY-MM-DD')
+      today: moment().format("YYYY-MM-DD"),
     };
   },
   mounted() {
-    this.changeMonth(this.monthList[0]);
+    this.changeMonth(this.monthList[0].value);
   },
   computed: {
     createdDate() {
@@ -135,34 +144,39 @@ export default {
       });
     },
 
+    generateMonthList(length) {
+      return [...Array(length).keys()].map((i) => {
+        return {
+          display: moment().add(i, "month").format("MMMM YYYY"),
+          value: moment().add(i, "month").format("YYYY-MM-DD"),
+        };
+      });
+    },
+
     clickDate(date) {
       //validate
-      const today = moment().format("YYYY-MM-DD")
+      const today = moment().format("YYYY-MM-DD");
 
       // is past
       if (today > date) {
-        return this.$swal(
-          'แจ้งเตือน',
-          `ไม่สามารถเลือกวันในอดีตได้`,
-          'error'
-        )
+        return this.$swal("แจ้งเตือน", `ไม่สามารถเลือกวันในอดีตได้`, "error");
       }
 
       if (today == date) {
         return this.$swal(
-          'แจ้งเตือน',
-          'ไม่สามารถเลือกวันนี้ได้กรุณาเลือกวันล่วงหน้า 1 วัน',
-          'error'
-        )
+          "แจ้งเตือน",
+          "ไม่สามารถเลือกวันนี้ได้กรุณาเลือกวันล่วงหน้า 1 วัน",
+          "error"
+        );
       }
 
       // is crearted
       if (this.createdDate[date]) {
         return this.$swal(
-          'แจ้งเตือน',
+          "แจ้งเตือน",
           `วันที่ ${date} ได้มีการสร้างไว้แล้ว`,
-          'error'
-        )
+          "error"
+        );
       }
 
       this.$emit("click_date", date);
@@ -178,20 +192,29 @@ export default {
       return parseInt(s);
     },
 
-    displayMonthThai (yyyymmdd) {
-      let mmmm = moment(yyyymmdd).format('MMMM')
-      return formatMonthEngToThai(mmmm)
+    formatMonth(MMyyyy) {
+      const [MM, yyyy] = MMyyyy.split(" ");
+      const formated = formatMonthEngToThai(MM);
+      return `${formated} ${yyyy}`;
+    },
+
+    displayMonthThai(yyyymmdd) {
+      let mmmm = moment(yyyymmdd).format("MMMM");
+      return formatMonthEngToThai(mmmm);
     },
 
     genClass(yyyymmdd) {
-      const { today } = this
+      const { today } = this;
       return {
         past: today > yyyymmdd,
         selected: this.tmpDate[yyyymmdd],
         open: this.createdDate[yyyymmdd],
         today: today == yyyymmdd,
-        free: !this.createdDate[yyyymmdd] && !this.tmpDate[yyyymmdd] && yyyymmdd > today
-      }
+        free:
+          !this.createdDate[yyyymmdd] &&
+          !this.tmpDate[yyyymmdd] &&
+          yyyymmdd > today,
+      };
     },
   },
 };
