@@ -7,7 +7,7 @@
           <span class="mr-5">เลือกเดือน</span>
           <select
             @change="(e) => changeMonth(e.target.value)"
-            style="max-width: 30%; height: 32px"
+            style="max-width: 50%; height: 40px"
           >
             <option :selected="m.value===selectedMonth" :value="m.value" v-for="m in monthList" :key="m.value">
               {{ formatMonth(m.display) }}
