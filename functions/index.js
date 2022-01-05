@@ -6,9 +6,9 @@ const path = require("path");
 const ReportExcel = require("./classes/reportExcel");
 const ReportPDF = require("./classes/pdf.publish.report");
 const Axios = require("axios");
-const { firestore, bucket, functions } = require("./config/firebase");
+const { firestore, functions } = require("./config/firebase");
 const { databaseUrl, systemAdminEmail } = require("./constant/constant");
-const {convertTimeRangeFormat} = require('./helperFunction/function')
+const { convertTimeRangeFormat } = require("./helperFunction/function");
 const {
   reserveEmailNotificationTemplate,
   userApplyNotificationEmailTemplate
@@ -27,7 +27,6 @@ const reportExcelApp = express().use(cors);
 const reportPDfApp = express().use(cors);
 const reserveNotificationApp = express().use(cors);
 
-
 exports.qrcode = functions.https.onRequest(
   qrCodeApp.post("/", async (req, res) => {
     try {
@@ -35,24 +34,10 @@ exports.qrcode = functions.https.onRequest(
       const destinationPath = `${entityId}/clientQr.png`;
       const tmpFileName = `${uuidV4()}.png`;
       const tmpPath = path.join(tmp, tmpFileName);
-      const file = bucket.file(destinationPath);
-      const exists = await file.exists();
-      if (exists[0]) {
-        const data = await file.getMetadata();
-        const { mediaLink } = data[0];
-        const imageLink = mediaLink;
-        console.log(imageLink);
-        res.status(200).send(imageLink);
-      } else {
-        generateQRImage(tmpPath, entityId);
-        const imageLink = await uploadFile(
-          tmpPath,
-          destinationPath,
-          "image/png"
-        );
-        await fs.unlink(tmpPath);
-        res.status(200).send(imageLink);
-      }
+      await generateQRImage(tmpPath, entityId);
+      const imageLink = await uploadFile(tmpPath, destinationPath, "image/png");
+      await fs.unlink(tmpPath);
+      res.status(200).send(imageLink);
     } catch (error) {
       console.log(error);
       res.status(500).send("internal server error");
@@ -133,8 +118,8 @@ exports.excelReport = functions.https.onRequest(
 );
 
 exports.reserveNotification = functions.https.onRequest(
-  reserveNotificationApp.post('/',async(req,res)=>{
-    try{
+  reserveNotificationApp.post("/", async (req, res) => {
+    try {
       const formData = req.body;
       const { authorization } = req.headers;
       const { data } = await Axios.get(
@@ -142,37 +127,37 @@ exports.reserveNotification = functions.https.onRequest(
         { headers: { authorization } }
       );
       const emailNoti = data.citizenContact.email;
-  
+
       if (!emailNoti) {
         res.status(200).send("email notification is empty");
         return;
       }
-  
+
       const replaceSpace = emailNoti.replace(/\s/g, "");
       const emailList = replaceSpace.split(",");
-      const reserveTime = convertTimeRangeFormat(formData.time)
+      const reserveTime = convertTimeRangeFormat(formData.time);
       const template = reserveEmailNotificationTemplate(
         emailList,
         formData,
         reserveTime
       );
-      await firestore.collection("mail").add(template)
+      await firestore.collection("mail").add(template);
       res.status(200).send("send email success");
-    }catch(error){
+    } catch (error) {
       console.log(error);
       res.status(500).send("internal server error");
     }
   })
-  );
+);
 
-exports.onCreateUser = functions.auth.user().onCreate(async(user) => {
-  try{
+exports.onCreateUser = functions.auth.user().onCreate(async user => {
+  try {
     const template = userApplyNotificationEmailTemplate(systemAdminEmail, user);
-    await firestore.collection("mail").add(template)
-    console.log("delivery user create notification email to system admin")
-    return
-  }catch(error){
-    console.log("notification email sending error", err)
-    return
+    await firestore.collection("mail").add(template);
+    console.log("delivery user create notification email to system admin");
+    return;
+  } catch (error) {
+    console.log("notification email sending error", err);
+    return;
   }
 });
