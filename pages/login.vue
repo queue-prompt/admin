@@ -68,6 +68,7 @@
               class="form-control"
               placeholder="email"
               required
+              autocomplete="off"
             />
             <div class="row" style="margin-top: 20px; margin-bottom: 20px">
               <div class="col">
@@ -112,7 +113,10 @@ export default {
     },
     async sendEmailResetPassword() {
       await this.$store.dispatch("user/resetPassword", this.forgetPassword.email);
-      this.backTologin()
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000);
+      // this.backTologin()
     },
   },
 };
