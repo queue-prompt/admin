@@ -29,7 +29,7 @@
                 lazy
                 :disabled="!isActive"
                 format="HH:mm"
-                :minute-interval="15"
+                :minute-interval="5"
                 @change="handleTimePicker(index, 'start')"
               />
               <small v-else style="font-size: 1rem">{{ row.start }}</small>
@@ -42,7 +42,7 @@
                 lazy
                 format="HH:mm"
                 :disabled="!isActive"
-                :minute-interval="15"
+                :minute-interval="5"
                 @change="handleTimePicker(index, 'end')"
               />
               <small v-else style="font-size: 1rem">{{ row.end }}</small>
