@@ -58,7 +58,7 @@ exports.pdfReport = functions.https.onRequest(
       const { data: entityData } = await Axios.get(
         databaseUrl + `/entity/${entityId}?ts=${new Date().valueOf()}`,
         { headers: { authorization } }
-      );
+      )
       const tmpFileName = `${uuidV4()}.pdf`;
       const tmpPath = path.join(tmp, tmpFileName);
       const destinationPath = `${entityId}/รายงาน.pdf`;
@@ -76,7 +76,7 @@ exports.pdfReport = functions.https.onRequest(
       res.status(500).send("internal server error");
     }
   })
-);
+)
 
 exports.excelReport = functions.https.onRequest(
   reportExcelApp.post("/", async (req, res) => {

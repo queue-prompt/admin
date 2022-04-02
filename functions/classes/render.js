@@ -1,8 +1,8 @@
 const { calAge,convertTimeRangeFormat } = require('../helperFunction/function')
-
+const moment = require('moment')
 
 const renders ={
-   reportTableHeader : [
+  reportTableHeader : [
     { 
       text: 'ลำดับ',
       style: 'tableContentStyle',
@@ -58,7 +58,17 @@ const renders ={
           return ''
         }
       }
-
+    },
+    {
+      text: 'วัน/เดือน/ปีเกิด',
+      style: 'tableContentStyle',
+      renderContent: (data) => {
+        if(data.birthDate) {
+          return moment(data.birthDate).format('DD/MM/YYYY')
+        } else {
+          return ''
+        }
+      }
     },
     { 
         text: 'เบอร์โทรศัพท์',
