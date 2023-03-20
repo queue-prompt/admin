@@ -137,13 +137,21 @@
                           วันที่เริ่มเปิดให้จอง
                         </label>
                         <div class="col-12 col-sm-8 col-lg-6 mt-1">
-                          <v-date-picker
+                          <div>
+                            <input type="text" v-model="form.reserveDate"/>
+                            <p class="mt-0" style="color: #ea2a04;">
+                              <span >*</span> 
+                              <span>Format: YYYY-MM-DD </span>
+                              <span class="ml-3">เช่น &nbsp;&nbsp;  2023-03-10</span>
+                            </p>
+                          </div>
+                          <!-- <v-date-picker
                             :masks="masks"
                             v-model="date"
                             transition="none"
                             mode="date"
                           >
-                            <template #default="{ inputValue, togglePopover }">
+                            <template #default="{ inputValue, togglePopover }">                              
                               <input
                                 type="text"
                                 style="padding: 5px; border: 1px solid #bdc0c7"
@@ -157,7 +165,9 @@
                                 "
                               />
                             </template>
-                          </v-date-picker>
+                          </v-date-picker> -->
+
+
                         </div>
                       </div>
 
@@ -580,6 +590,9 @@ export default {
           0,
           2
         )}:${reserveTime.slice(2, 4)}`;
+
+        console.log('reserveDate -->', reserveDate)
+        console.log('this.date --->', this.date)
       }
       const adminContact = { ...formValue.adminContact };
 
@@ -636,7 +649,8 @@ export default {
       payload.price = parseInt(payload.price);
 
       if (payload.reserveMode === 1) {
-        const date = dayjs(this.date).format("YYYY-MM-DD");
+        // const date = dayjs(this.date).format("YYYY-MM-DD");
+        const date = dayjs(this.form?.reserveDate).format("YYYY-MM-DD");
         const time = dayjs(this.date).format("HHmm");
         payload.reserveDate = date;
         payload.reserveTime = time;
