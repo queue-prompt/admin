@@ -1,6 +1,6 @@
 {
   "name": "admin.queueprompt.com",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "dev": "nuxt",
@@ -27,6 +27,7 @@
     "moment": "^2.29.1",
     "nuxt": "^2.15.7",
     "nuxt-sweetalert2": "^1.0.0",
+    "qrcode": "^1.5.3",
     "v-calendar": "^2.3.2",
     "vue-markdown-render": "^1.1.2",
     "vue2-timepicker": "^1.1.6",
